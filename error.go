@@ -1,5 +1,6 @@
 package patreon
 
+// Error describes error details
 type Error struct {
 	Code     int    `json:"code"`
 	CodeName string `json:"code_name"`
@@ -9,6 +10,7 @@ type Error struct {
 	Title    string `json:"title"`
 }
 
+// ErrorResponse is a Patreon error response.
 type ErrorResponse struct {
 	Errors []Error `json:"errors"`
 }

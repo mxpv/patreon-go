@@ -110,8 +110,8 @@ func (c *Client) get(path string, v interface{}, opts ...requestOption) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		errs := &ErrorResponse{}
-		if err := json.NewDecoder(resp.Body).Decode(errs); err != nil {
+		errs := ErrorResponse{}
+		if err := json.NewDecoder(resp.Body).Decode(&errs); err != nil {
 			return err
 		}
 
