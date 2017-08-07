@@ -23,7 +23,7 @@ type Campaign struct {
 		IsNsfw                        bool      `json:"is_nsfw"`
 		IsPlural                      bool      `json:"is_plural"`
 		CreatedAt                     time.Time `json:"created_at"`
-		Published_at                  time.Time `json:"published_at"`
+		PublishedAt                   time.Time `json:"published_at"`
 		PledgeURL                     string    `json:"pledge_url"`
 		PledgeSum                     int       `json:"pledge_sum"`
 		PatronCount                   int       `json:"patron_count"`

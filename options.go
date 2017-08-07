@@ -11,6 +11,7 @@ type options struct {
 
 type requestOption func(*options)
 
+// WithFields specifies the resource attributes you want to be returned by API
 func WithFields(resource string, fields ...string) requestOption {
 	return func(o *options) {
 		if o.fields == nil {
@@ -20,12 +21,14 @@ func WithFields(resource string, fields ...string) requestOption {
 	}
 }
 
+// WithIncludes specifies the related resources you want to be returned by API
 func WithIncludes(include ...string) requestOption {
 	return func(o *options) {
 		o.include = strings.Join(include, ",")
 	}
 }
 
+// WithPageSize specifies the number of items to return
 func WithPageSize(size int) requestOption {
 	return func(o *options) {
 		o.size = size
