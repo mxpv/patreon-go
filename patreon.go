@@ -9,10 +9,12 @@ import (
 const (
 	AuthorizationURL = "https://www.patreon.com/oauth2/authorize"
 	AccessTokenURL   = "https://api.patreon.com/oauth2/token"
+	BaseURL          = "https://api.patreon.com"
 )
 
 type Client struct {
 	httpClient *http.Client
+	baseURL    string
 }
 
 // NewClient returns a new Patreon API client. If a nil httpClient is
@@ -24,7 +26,7 @@ func NewClient(httpClient *http.Client) *Client {
 		httpClient = http.DefaultClient
 	}
 
-	return &Client{httpClient: httpClient}
+	return &Client{httpClient: httpClient, baseURL: BaseURL}
 }
 
 // Client returns the HTTP client configured for this client.
@@ -37,7 +39,7 @@ func (c *Client) Client() *http.Client {
 // It is most typically used in the OAuth "Log in with Patreon" flow to create or update the user's account on your site.
 func (c *Client) FetchUser() (*UserResponse, error) {
 	resp := &UserResponse{}
-	err := c.get("current_user", resp)
+	err := c.get("/oauth2/api/current_user", resp)
 	return resp, err
 }
 
@@ -47,7 +49,7 @@ func (c *Client) FetchUser() (*UserResponse, error) {
 // next page of pledges.
 func (c *Client) FetchCampaign() (*CampaignResponse, error) {
 	resp := &CampaignResponse{}
-	err := c.get("current_user/campaigns", resp)
+	err := c.get("/oauth2/api/current_user/campaigns", resp)
 	return resp, err
 }
 
@@ -57,13 +59,13 @@ func (c *Client) FetchCampaign() (*CampaignResponse, error) {
 // a links section which may be used to fetch the next page of pledges, or go back to the first page.
 func (c *Client) FetchPledges(campaignId string) (*PledgeResponse, error) {
 	resp := &PledgeResponse{}
-	path := fmt.Sprintf("campaigns/%s/pledges", campaignId)
+	path := fmt.Sprintf("/oauth2/api/campaigns/%s/pledges", campaignId)
 	err := c.get(path, resp)
 	return resp, err
 }
 
 func (c *Client) get(path string, v interface{}) error {
-	resp, err := c.httpClient.Get("https://api.patreon.com/oauth2/api/" + path)
+	resp, err := c.httpClient.Get(c.baseURL + path)
 	if err != nil {
 		return err
 	}
