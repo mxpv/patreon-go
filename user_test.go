@@ -1,4 +1,4 @@
-package patreon_go
+package patreon
 
 import (
 	"fmt"

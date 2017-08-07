@@ -1,4 +1,4 @@
-package patreon_go
+package patreon
 
 type Error struct {
 	Code     int    `json:"code"`
