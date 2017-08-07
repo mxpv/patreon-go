@@ -28,3 +28,7 @@ type Campaign struct {
 		OutstandingPaymentAmountCents int       `json:"outstanding_payment_amount_cents"`
 	} `json:"attributes"`
 }
+
+type CampaignResponse struct {
+	Data []Campaign `json:"data"`
+}

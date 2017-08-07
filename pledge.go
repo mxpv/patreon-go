@@ -12,3 +12,14 @@ type Pledge struct {
 		PatronPaysFees bool      `json:"patron_pays_fees"`
 	} `json:"attributes"`
 }
+
+type PledgeResponse struct {
+	Data  []Pledge `json:"data"`
+	Links struct {
+		First string `json:"first"`
+		Next  string `json:"next"`
+	} `json:"links"`
+	Meta struct {
+		Count int `json:"count"`
+	} `json:"meta"`
+}
