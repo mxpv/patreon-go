@@ -31,7 +31,10 @@ func Example_fetchPatronsAndPledges() {
 	page := 1
 
 	for {
-		pledgesResponse, err := client.FetchPledges(campaignId, WithPageSize(25), WithCursor(cursor))
+		pledgesResponse, err := client.FetchPledges(campaignId,
+			WithPageSize(25),
+			WithCursor(cursor))
+
 		if err != nil {
 			panic(err)
 			return

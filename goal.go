@@ -2,7 +2,7 @@ package patreon
 
 import "time"
 
-// Goal represents a Patreon's goal
+// Goal represents a Patreon's goal.
 type Goal struct {
 	Type       string `json:"type"`
 	Id         string `json:"id"`

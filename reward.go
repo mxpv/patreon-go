@@ -2,7 +2,7 @@ package patreon
 
 import "time"
 
-// Reward represents a Patreon's reward
+// Reward represents a Patreon's reward.
 type Reward struct {
 	Type       string `json:"type"`
 	Id         string `json:"id"`

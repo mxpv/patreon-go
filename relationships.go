@@ -1,22 +1,22 @@
 package patreon
 
-// Data represents a link to entity
+// Data represents a link to entity.
 type Data struct {
 	Id   string `json:"id"`
 	Type string `json:"type"`
 }
 
-// Meta represents extra information about relationship
+// Meta represents extra information about relationship.
 type Meta struct {
 	Count int `json:"count"`
 }
 
-// CategoriesRelationship represents 'categories' include
+// CategoriesRelationship represents 'categories' include.
 type CategoriesRelationship struct {
 	Data []Data `json:"data"`
 }
 
-// CreatorRelationship represents 'creator' include
+// CreatorRelationship represents 'creator' include.
 type CreatorRelationship struct {
 	Data  Data `json:"data"`
 	Links struct {
@@ -24,7 +24,7 @@ type CreatorRelationship struct {
 	} `json:"links"`
 }
 
-// PledgesRelationship represents 'pledges' include
+// PledgesRelationship represents 'pledges' include.
 type PledgesRelationship struct {
 	Data  []Data `json:"data"`
 	Links struct {
@@ -34,17 +34,17 @@ type PledgesRelationship struct {
 	Meta Meta `json:"meta"`
 }
 
-// GoalsRelationship represents 'goals' include
+// GoalsRelationship represents 'goals' include.
 type GoalsRelationship struct {
 	Data []Data `json:"data"`
 }
 
-// Rewards represents 'rewards' include
+// Rewards represents 'rewards' include.
 type RewardsRelationship struct {
 	Data []Data `json:"data"`
 }
 
-// Reward represents 'reward' include
+// Reward represents 'reward' include.
 type RewardRelationship struct {
 	Data  Data `json:"data"`
 	Links struct {
@@ -52,7 +52,7 @@ type RewardRelationship struct {
 	} `json:"links"`
 }
 
-// PostAggregationRelationship represents 'post_aggregation' include
+// PostAggregationRelationship represents 'post_aggregation' include.
 type PostAggregationRelationship struct {
 	Data  Data `json:"data"`
 	Links struct {
@@ -60,7 +60,7 @@ type PostAggregationRelationship struct {
 	} `json:"links"`
 }
 
-// CampaignRelationship represents 'campaign' include
+// CampaignRelationship represents 'campaign' include.
 type CampaignRelationship struct {
 	Data  Data `json:"data"`
 	Links struct {
@@ -68,7 +68,7 @@ type CampaignRelationship struct {
 	} `json:"links"`
 }
 
-// PatronRelationship represents 'patron' include
+// PatronRelationship represents 'patron' include.
 type PatronRelationship struct {
 	Data  Data `json:"data"`
 	Links struct {
