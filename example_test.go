@@ -1,7 +1,6 @@
 package patreon
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"time"
@@ -94,7 +93,7 @@ func Example_refreshToken() {
 		Expiry: time.Now().Add(-24 * time.Hour),
 	}
 
-	tc := config.Client(context.Background(), &token)
+	tc := config.Client(oauth2.NoContext, &token)
 
 	client := NewClient(tc)
 	_, err := client.FetchUser()
