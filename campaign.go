@@ -46,5 +46,6 @@ type Campaign struct {
 }
 
 type CampaignResponse struct {
-	Data []Campaign `json:"data"`
+	Data     []Campaign `json:"data"`
+	Included Includes   `json:"included"`
 }

@@ -5,7 +5,7 @@ import "time"
 // Goal represents a Patreon's goal
 type Goal struct {
 	Type       string `json:"type"`
-	Id         int    `json:"id"`
+	Id         string `json:"id"`
 	Attributes struct {
 		Amount              int       `json:"amount"`
 		AmountCents         int       `json:"amount_cents"`

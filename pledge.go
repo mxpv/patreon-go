@@ -5,14 +5,8 @@ import "time"
 // Default includes for Pledge
 const PledgeDefaultRelations = "patron,reward,creator,address,pledge_vat_location"
 
-// Pledge represents Patreon's pledge
-// Valid relationships:
-// - patron
-// - reward
-// - creator
-// - address (?)
-// - card (?)
-// - pledge_vat_location (?)
+// Pledge represents Patreon's pledge.
+// Valid relationships: patron, reward, creator, address (?), card (?), pledge_vat_location (?).
 type Pledge struct {
 	Type       string `json:"type"`
 	Id         string `json:"id"`
@@ -30,8 +24,9 @@ type Pledge struct {
 }
 
 type PledgeResponse struct {
-	Data  []Pledge `json:"data"`
-	Links struct {
+	Data     []Pledge `json:"data"`
+	Included Includes `json:"included"`
+	Links    struct {
 		First string `json:"first"`
 		Next  string `json:"next"`
 	} `json:"links"`

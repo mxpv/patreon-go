@@ -55,6 +55,26 @@ func TestFetchCampaign(t *testing.T) {
 	require.Equal(t, 1, len(categories.Data))
 	require.Equal(t, "7", categories.Data[0].Id)
 	require.Equal(t, "category", categories.Data[0].Type)
+
+	// Includes
+
+	user, ok := resp.Included.Items[0].(*User)
+	require.True(t, ok)
+	require.Equal(t, "2822191", user.Id)
+	require.Equal(t, "user", user.Type)
+	require.Equal(t, "podsync", user.Attributes.Vanity)
+
+	reward, ok := resp.Included.Items[1].(*Reward)
+	require.True(t, ok)
+	require.Equal(t, "12312312", reward.Id)
+	require.Equal(t, "reward", reward.Type)
+	require.Equal(t, 100, reward.Attributes.Amount)
+
+	goal, ok := resp.Included.Items[2].(*Goal)
+	require.True(t, ok)
+	require.Equal(t, "2131231", goal.Id)
+	require.Equal(t, "goal", goal.Type)
+	require.Equal(t, 1000, goal.Attributes.Amount)
 }
 
 const fetchCampaignResp = `
@@ -109,6 +129,31 @@ const fetchCampaignResp = `
                     }
                 }
             }
+        }
+    ],
+    "included": [
+        {
+            "attributes": {
+                "vanity": "podsync"
+            },
+            "id": "2822191",
+            "relationships": {},
+            "type": "user"
+        },
+        {
+            "attributes": {
+                "amount": 100
+            },
+            "id": "12312312",
+            "relationships": {},
+            "type": "reward"
+        },
+        {
+            "attributes": {
+                "amount": 1000
+            },
+            "id": "2131231",
+            "type": "goal"
         }
     ]
 }
