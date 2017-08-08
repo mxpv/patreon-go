@@ -2,7 +2,7 @@ package patreon
 
 import "time"
 
-// Default includes for Campaign.
+// CampaignDefaultRelations specifies default includes for Campaign.
 const CampaignDefaultRelations = "rewards,creator,goals"
 
 // Campaign represents Patreon's campaign.

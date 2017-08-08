@@ -9,6 +9,8 @@ type Includes struct {
 	Items []interface{}
 }
 
+// UnmarshalJSON deserializes 'includes' field into the appropriate structs depending on the 'type' field.
+// See http://gregtrowbridge.com/golang-json-serialization-with-interfaces/ for implementation details.
 func (i *Includes) UnmarshalJSON(b []byte) error {
 	var items []*json.RawMessage
 	if err := json.Unmarshal(b, &items); err != nil {
