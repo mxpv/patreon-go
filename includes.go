@@ -2,7 +2,7 @@ package patreon
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 )
 
 type Includes struct {
@@ -38,7 +38,7 @@ func (i *Includes) UnmarshalJSON(b []byte) error {
 		} else if s.Type == "goal" {
 			obj = &Goal{}
 		} else {
-			return errors.New("unsupported type found")
+			return fmt.Errorf("unsupported type %s", s.Type)
 		}
 
 		if err := json.Unmarshal(*raw, obj); err != nil {
