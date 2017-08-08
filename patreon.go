@@ -14,6 +14,7 @@ const (
 	BaseURL          = "https://api.patreon.com"
 )
 
+// Client manages communication with Patreon API.
 type Client struct {
 	httpClient *http.Client
 	baseURL    string
@@ -69,7 +70,7 @@ func (c *Client) FetchPledges(campaignId string, opts ...requestOption) (*Pledge
 func (c *Client) buildURL(path string, opts ...requestOption) (string, error) {
 	cfg := getOptions(opts...)
 
-	u, err := url.Parse(c.baseURL + path)
+	u, err := url.ParseRequestURI(c.baseURL + path)
 	if err != nil {
 		return "", err
 	}

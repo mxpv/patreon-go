@@ -39,12 +39,12 @@ type GoalsRelationship struct {
 	Data []Data `json:"data"`
 }
 
-// Rewards represents 'rewards' include.
+// RewardsRelationship represents 'rewards' include.
 type RewardsRelationship struct {
 	Data []Data `json:"data"`
 }
 
-// Reward represents 'reward' include.
+// RewardRelationship represents 'reward' include.
 type RewardRelationship struct {
 	Data  Data `json:"data"`
 	Links struct {

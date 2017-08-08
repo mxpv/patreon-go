@@ -32,6 +32,11 @@ func TestErrorResponse(t *testing.T) {
 	require.Equal(t, "The server could not verify that you are authorized to access the URL requested.", errResp.Errors[0].Detail)
 }
 
+func TestDefaultErrorString(t *testing.T) {
+	err := ErrorResponse{}
+	require.Equal(t, "(ERR)", err.Error())
+}
+
 const errorResp = `
 {
     "errors": [

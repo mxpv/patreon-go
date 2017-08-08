@@ -38,6 +38,7 @@ func WithPageSize(size int) requestOption {
 	}
 }
 
+// WithCursor controls cursor-based pagination. Cursor will also be extracted from navigation links for convenience.
 func WithCursor(cursor string) requestOption {
 	return func(o *options) {
 		u, err := url.ParseRequestURI(cursor)

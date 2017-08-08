@@ -2,7 +2,7 @@ package patreon
 
 import "time"
 
-// Default includes for User.
+// UserDefaultRelations specifies default includes for User.
 const UserDefaultRelations = "campaign,pledges"
 
 // User represents a Patreon's user.

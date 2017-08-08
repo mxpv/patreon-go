@@ -21,5 +21,5 @@ func (e ErrorResponse) Error() string {
 		return e.Errors[0].Detail
 	}
 
-	return ""
+	return "(ERR)"
 }
