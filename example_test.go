@@ -22,7 +22,7 @@ func Example_fetchPatronsAndPledges() {
 	// Get your campaign data
 	campaignResponse, err := client.FetchCampaign()
 	if err != nil {
-		return
+		panic(err)
 	}
 
 	campaignId := campaignResponse.Data[0].Id
@@ -37,7 +37,6 @@ func Example_fetchPatronsAndPledges() {
 
 		if err != nil {
 			panic(err)
-			return
 		}
 
 		// Get all the users in an easy-to-lookup way
