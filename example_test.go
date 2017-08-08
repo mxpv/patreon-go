@@ -1,7 +1,6 @@
 package patreon
 
 import (
-	"context"
 	"fmt"
 	"os"
 
@@ -14,7 +13,7 @@ var testAccessToken = os.Getenv("PATREON_ACCESS_TOKEN")
 // This example is a port of PHP version https://github.com/Patreon/patreon-php/blob/master/examples/patron-list.php
 func Example_fetchPatronsAndPledges() {
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: testAccessToken})
-	tc := oauth2.NewClient(context.Background(), ts)
+	tc := oauth2.NewClient(oauth2.NoContext, ts)
 
 	// Create client with static access token
 	client := NewClient(tc)
