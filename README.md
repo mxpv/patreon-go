@@ -51,7 +51,7 @@ func NewPatreonClient(ctx context.Context, token string) *patreon.Client {
 Automatically refresh token:
 
 ```go
-func NewPatreonClient(ctx context.Context, username, password string) (*patreon.Client, error) {
+func NewPatreonClient() (*patreon.Client, error) {
 	config := oauth2.Config{
 		ClientID:     "<client_id>",
 		ClientSecret: "<client_secret>",
