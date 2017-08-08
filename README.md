@@ -3,6 +3,8 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/mxpv/patreon-go)](https://goreportcard.com/report/github.com/mxpv/patreon-go)
 [![codecov](https://codecov.io/gh/mxpv/patreon-go/branch/master/graph/badge.svg)](https://codecov.io/gh/mxpv/patreon-go)
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![Patreon](https://img.shields.io/badge/support-patreon-E6461A.svg)](https://www.patreon.com/podsync)
+
 
 # patreon-go
 
