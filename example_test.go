@@ -88,6 +88,7 @@ func Example_refreshToken() {
 	}
 
 	token := oauth2.Token{
+		AccessToken:  "<current_access_token>",
 		RefreshToken: "<current_refresh_token>",
 		// Must be non-nil, otherwise token will not be expired
 		Expiry: time.Now().Add(-24 * time.Hour),

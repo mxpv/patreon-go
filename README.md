@@ -46,7 +46,7 @@ func NewPatreonClient(ctx context.Context, token string) *patreon.Client {
 }
 ```
 
-Refresh tokens:
+Automatically refresh token:
 
 ```go
 func NewPatreonClient(ctx context.Context, username, password string) (*patreon.Client, error) {
@@ -61,7 +61,8 @@ func NewPatreonClient(ctx context.Context, username, password string) (*patreon.
 	}
 
 	token := oauth2.Token{
-		RefreshToken: "<current_refresh_token>",
+		AccessToken:  "<current_access_token>",
+        RefreshToken: "<current_refresh_token>",
 		// Must be non-nil, otherwise token will not be expired
 		Expiry: time.Now().Add(-24 * time.Hour),
 	}
