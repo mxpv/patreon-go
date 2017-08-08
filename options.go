@@ -1,6 +1,9 @@
 package patreon
 
-import "strings"
+import (
+	"net/url"
+	"strings"
+)
 
 type options struct {
 	fields  map[string]string
@@ -37,6 +40,11 @@ func WithPageSize(size int) requestOption {
 
 func WithCursor(cursor string) requestOption {
 	return func(o *options) {
+		u, err := url.ParseRequestURI(cursor)
+		if err == nil {
+			cursor = u.Query().Get("page[cursor]")
+		}
+
 		o.cursor = cursor
 	}
 }
