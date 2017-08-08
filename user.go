@@ -37,6 +37,7 @@ type User struct {
 	} `json:"relationships"`
 }
 
+// UserResponse wraps Patreon's fetch user API response
 type UserResponse struct {
 	Data  User `json:"data"`
 	Links struct {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// Includes wraps 'includes' JSON field to handle objects of different type within an array.
 type Includes struct {
 	Items []interface{}
 }

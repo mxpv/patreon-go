@@ -45,6 +45,7 @@ type Campaign struct {
 	} `json:"relationships"`
 }
 
+// CampaignResponse wraps Patreon's campaign API response
 type CampaignResponse struct {
 	Data     []Campaign `json:"data"`
 	Included Includes   `json:"included"`

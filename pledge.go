@@ -23,6 +23,7 @@ type Pledge struct {
 	} `json:"relationships"`
 }
 
+// PledgeResponse wraps Patreon's pledges API response
 type PledgeResponse struct {
 	Data     []Pledge `json:"data"`
 	Included Includes `json:"included"`
