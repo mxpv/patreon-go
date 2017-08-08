@@ -2,7 +2,19 @@ package patreon
 
 import "time"
 
-// User represents a user
+const UserDefaultRelations = "campaign,pledges"
+
+// User represents a Patreon's user
+// Valid relationships:
+// - pledges
+// - cards
+// - follows
+// - campaign
+// - presence
+// - session
+// - locations
+// - current_user_follow
+// - pledge_to_current_user
 type User struct {
 	Type       string `json:"type"`
 	Id         string `json:"id"`
@@ -28,6 +40,9 @@ type User struct {
 		Created         time.Time `json:"created"`
 		URL             string    `json:"url"`
 	} `json:"attributes"`
+	Relationships struct {
+		Pledges *PledgesRelationship `json:"pledges,omitempty"`
+	} `json:"relationships"`
 }
 
 type UserResponse struct {

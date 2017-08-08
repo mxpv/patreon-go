@@ -2,6 +2,16 @@ package patreon
 
 import "time"
 
+const PledgeDefaultRelations = "patron,reward,creator,address,pledge_vat_location"
+
+// Pledge represents Patreon's pledge
+// Valid relationships:
+// - patron
+// - reward
+// - creator
+// - address (?)
+// - card (?)
+// - pledge_vat_location (?)
 type Pledge struct {
 	Type       string `json:"type"`
 	Id         string `json:"id"`
@@ -11,6 +21,11 @@ type Pledge struct {
 		PledgeCapCents int       `json:"pledge_cap_cents"`
 		PatronPaysFees bool      `json:"patron_pays_fees"`
 	} `json:"attributes"`
+	Relationships struct {
+		Patron  *PatronRelationship  `json:"patron"`
+		Reward  *RewardRelationship  `json:"reward"`
+		Creator *CreatorRelationship `json:"creator"`
+	} `json:"relationships"`
 }
 
 type PledgeResponse struct {

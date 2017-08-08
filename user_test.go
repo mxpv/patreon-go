@@ -21,23 +21,35 @@ func TestFetchUser(t *testing.T) {
 	require.Equal(t, "https://www.patreon.com/api/user/3232132131", resp.Links.Self)
 	require.Equal(t, "user", resp.Data.Type)
 	require.Equal(t, "3232132131", resp.Data.Id)
-	require.Equal(t, "max@gmail.com", resp.Data.Attributes.Email)
-	require.Equal(t, "max", resp.Data.Attributes.Facebook)
-	require.Equal(t, "1312321312", resp.Data.Attributes.FacebookId)
-	require.Equal(t, "Max", resp.Data.Attributes.FirstName)
-	require.Equal(t, "Max", resp.Data.Attributes.LastName)
-	require.Equal(t, "Max", resp.Data.Attributes.FullName)
-	require.Equal(t, 1, resp.Data.Attributes.Gender)
-	require.True(t, resp.Data.Attributes.HasPassword)
-	require.Equal(t, "https://c8.patreon.com/2/400/3232132131", resp.Data.Attributes.ImageURL)
-	require.Equal(t, "https://c8.patreon.com/2/100/3232132131", resp.Data.Attributes.ThumbURL)
-	require.True(t, resp.Data.Attributes.IsDeleted)
-	require.True(t, resp.Data.Attributes.IsEmailVerified)
-	require.True(t, resp.Data.Attributes.IsNuked)
-	require.True(t, resp.Data.Attributes.IsSuspended)
-	require.Equal(t, "pod_sync", resp.Data.Attributes.Twitter)
-	require.Equal(t, "https://www.patreon.com/podsync", resp.Data.Attributes.URL)
-	require.Equal(t, "podsync", resp.Data.Attributes.Vanity)
+
+	// Attributes
+
+	attrs := resp.Data.Attributes
+	require.Equal(t, "max@gmail.com", attrs.Email)
+	require.Equal(t, "max", attrs.Facebook)
+	require.Equal(t, "1312321312", attrs.FacebookId)
+	require.Equal(t, "Max", attrs.FirstName)
+	require.Equal(t, "Max", attrs.LastName)
+	require.Equal(t, "Max", attrs.FullName)
+	require.Equal(t, 1, attrs.Gender)
+	require.True(t, attrs.HasPassword)
+	require.Equal(t, "https://c8.patreon.com/2/400/3232132131", attrs.ImageURL)
+	require.Equal(t, "https://c8.patreon.com/2/100/3232132131", attrs.ThumbURL)
+	require.True(t, attrs.IsDeleted)
+	require.True(t, attrs.IsEmailVerified)
+	require.True(t, attrs.IsNuked)
+	require.True(t, attrs.IsSuspended)
+	require.Equal(t, "pod_sync", attrs.Twitter)
+	require.Equal(t, "https://www.patreon.com/podsync", attrs.URL)
+	require.Equal(t, "podsync", attrs.Vanity)
+
+	// Relationships
+
+	pledges := resp.Data.Relationships.Pledges
+	require.NotNil(t, pledges)
+	require.Len(t, pledges.Data, 1)
+	require.Equal(t, "2444714", pledges.Data[0].Id)
+	require.Equal(t, "pledge", pledges.Data[0].Type)
 }
 
 const currentUserResp = `
@@ -77,6 +89,16 @@ const currentUserResp = `
             "youtube": null
         },
         "id": "3232132131",
+        "relationships": {
+            "pledges": {
+                "data": [
+                	{
+                    	"id": "2444714",
+                        "type": "pledge"
+                    }
+                ]
+            }
+        },
         "type": "user"
     },
     "links": {

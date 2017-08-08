@@ -23,20 +23,38 @@ func TestFetchCampaign(t *testing.T) {
 	require.Equal(t, "campaign", resp.Data[0].Type)
 	require.Equal(t, "278915", resp.Data[0].Id)
 	require.Equal(t, "new podcasting experience - Podsync", resp.Data[0].Attributes.CreationName)
-	require.Equal(t, 8, resp.Data[0].Attributes.CreationCount)
-	require.True(t, resp.Data[0].Attributes.DisplayPatronGoals)
-	require.NotEmpty(t, resp.Data[0].Attributes.ImageSmallURL)
-	require.NotEmpty(t, resp.Data[0].Attributes.ImageURL)
-	require.True(t, resp.Data[0].Attributes.IsChargedImmediately)
-	require.True(t, resp.Data[0].Attributes.IsMonthly)
-	require.True(t, resp.Data[0].Attributes.IsNsfw)
-	require.True(t, resp.Data[0].Attributes.IsPlural)
-	require.Equal(t, 123121, resp.Data[0].Attributes.PatronCount)
-	require.Equal(t, "month", resp.Data[0].Attributes.PayPerName)
-	require.Equal(t, 12321312, resp.Data[0].Attributes.PledgeSum)
-	require.NotEmpty(t, resp.Data[0].Attributes.Summary)
-	require.NotEmpty(t, resp.Data[0].Attributes.PledgeURL)
-	require.NotEmpty(t, resp.Data[0].Attributes.ThanksMsg)
+
+	// Attributes
+
+	attrs := resp.Data[0].Attributes
+	require.Equal(t, 8, attrs.CreationCount)
+	require.True(t, attrs.DisplayPatronGoals)
+	require.NotEmpty(t, attrs.ImageSmallURL)
+	require.NotEmpty(t, attrs.ImageURL)
+	require.True(t, attrs.IsChargedImmediately)
+	require.True(t, attrs.IsMonthly)
+	require.True(t, attrs.IsNsfw)
+	require.True(t, attrs.IsPlural)
+	require.Equal(t, 123121, attrs.PatronCount)
+	require.Equal(t, "month", attrs.PayPerName)
+	require.Equal(t, 12321312, attrs.PledgeSum)
+	require.NotEmpty(t, attrs.Summary)
+	require.NotEmpty(t, attrs.PledgeURL)
+	require.NotEmpty(t, attrs.ThanksMsg)
+
+	// Relationships
+
+	creator := resp.Data[0].Relationships.Creator
+	require.NotNil(t, creator)
+	require.Equal(t, "2343242423", creator.Data.Id)
+	require.Equal(t, "user", creator.Data.Type)
+	require.Equal(t, "https://www.patreon.com/api/user/2343242423", creator.Links.Related)
+
+	categories := resp.Data[0].Relationships.Categories
+	require.NotNil(t, categories)
+	require.Equal(t, 1, len(categories.Data))
+	require.Equal(t, "7", categories.Data[0].Id)
+	require.Equal(t, "category", categories.Data[0].Type)
 }
 
 const fetchCampaignResp = `
@@ -71,7 +89,26 @@ const fetchCampaignResp = `
                 "thanks_video_url": null
             },
             "id": "278915",
-            "type": "campaign"
+            "type": "campaign",
+            "relationships": {
+                "categories": {
+                    "data": [
+                        {
+                            "id": "7",
+                            "type": "category"
+                        }
+                    ]
+                },
+                "creator": {
+                    "data": {
+                        "id": "2343242423",
+                        "type": "user"
+                    },
+                    "links": {
+                        "related": "https://www.patreon.com/api/user/2343242423"
+                    }
+                }
+            }
         }
     ]
 }

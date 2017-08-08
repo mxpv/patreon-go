@@ -2,6 +2,18 @@ package patreon
 
 import "time"
 
+const CampaignDefaultRelations = "rewards,creator,goals"
+
+// Campaign represents Patreon's campaign
+// Valid relationships:
+// - rewards
+// - creator
+// - goals
+// - pledges
+// - current_user_pledge (?)
+// - post_aggregation
+// - categories
+// - preview_token (?)
 type Campaign struct {
 	Type       string `json:"type"`
 	Id         string `json:"id"`
@@ -30,6 +42,14 @@ type Campaign struct {
 		CreationCount                 int       `json:"creation_count"`
 		OutstandingPaymentAmountCents int       `json:"outstanding_payment_amount_cents"`
 	} `json:"attributes"`
+	Relationships struct {
+		Categories      *CategoriesRelationship      `json:"categories,omitempty"`
+		Creator         *CreatorRelationship         `json:"creator,omitempty"`
+		Rewards         *RewardsRelationship         `json:"rewards,omitempty"`
+		Goals           *GoalsRelationship           `json:"goals,omitempty"`
+		Pledges         *PledgesRelationship         `json:"pledges,omitempty"`
+		PostAggregation *PostAggregationRelationship `json:"post_aggregation,omitempty"`
+	} `json:"relationships"`
 }
 
 type CampaignResponse struct {

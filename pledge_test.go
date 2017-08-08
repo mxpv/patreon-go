@@ -24,12 +24,34 @@ func TestFetchPledges(t *testing.T) {
 	require.NotEmpty(t, resp.Links.First)
 	require.NotEmpty(t, resp.Links.Next)
 
+	// Attributes
+
 	require.Equal(t, 2, len(resp.Data))
 	require.Equal(t, "pledge", resp.Data[0].Type)
 	require.Equal(t, "61272355", resp.Data[0].Id)
 	require.Equal(t, 100, resp.Data[0].Attributes.AmountCents)
 	require.Equal(t, 100, resp.Data[0].Attributes.PledgeCapCents)
 	require.True(t, resp.Data[0].Attributes.PatronPaysFees)
+
+	// Relationships
+
+	creator := resp.Data[1].Relationships.Creator
+	require.NotNil(t, creator)
+	require.Equal(t, "12321312", creator.Data.Id)
+	require.Equal(t, "user", creator.Data.Type)
+	require.Equal(t, "https://www.patreon.com/api/user/12321312", creator.Links.Related)
+
+	patron := resp.Data[1].Relationships.Patron
+	require.NotNil(t, patron)
+	require.Equal(t, "12321", patron.Data.Id)
+	require.Equal(t, "user", patron.Data.Type)
+	require.Equal(t, "https://www.patreon.com/api/user/12321", patron.Links.Related)
+
+	reward := resp.Data[1].Relationships.Reward
+	require.NotNil(t, reward)
+	require.Equal(t, "21321321321", reward.Data.Id)
+	require.Equal(t, "reward", reward.Data.Type)
+	require.Equal(t, "https://www.patreon.com/api/rewards/21321321321", reward.Links.Related)
 }
 
 const fetchPledgesResp = `
@@ -52,6 +74,35 @@ const fetchPledgesResp = `
                 "unread_count": 8
             },
             "id": "6628990",
+			"relationships": {
+				"creator": {
+					"data": {
+						"id": "12321312",
+						"type": "user"
+					},
+					"links": {
+						"related": "https://www.patreon.com/api/user/12321312"
+					}
+				},
+				"patron": {
+					"data": {
+						"id": "12321",
+						"type": "user"
+					},
+					"links": {
+						"related": "https://www.patreon.com/api/user/12321"
+					}
+				},
+				"reward": {
+					"data": {
+						"id": "21321321321",
+						"type": "reward"
+					},
+					"links": {
+						"related": "https://www.patreon.com/api/rewards/21321321321"
+					}
+				}
+			},
             "type": "pledge"
         }
     ],
