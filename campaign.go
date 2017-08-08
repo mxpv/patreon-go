@@ -2,18 +2,11 @@ package patreon
 
 import "time"
 
+// Default includes for Campaign
 const CampaignDefaultRelations = "rewards,creator,goals"
 
-// Campaign represents Patreon's campaign
-// Valid relationships:
-// - rewards
-// - creator
-// - goals
-// - pledges
-// - current_user_pledge (?)
-// - post_aggregation
-// - categories
-// - preview_token (?)
+// Campaign represents Patreon's campaign.
+// Valid relationships: rewards, creator, goals, pledges, current_user_pledge, post_aggregation, categories, preview_token
 type Campaign struct {
 	Type       string `json:"type"`
 	Id         string `json:"id"`

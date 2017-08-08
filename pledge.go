@@ -2,6 +2,7 @@ package patreon
 
 import "time"
 
+// Default includes for Pledge
 const PledgeDefaultRelations = "patron,reward,creator,address,pledge_vat_location"
 
 // Pledge represents Patreon's pledge
