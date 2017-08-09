@@ -1,2 +1,2 @@
-// patreon-go is a Go client library for accessing the Patreon API.
+// Package patreon is a Go client library for accessing the Patreon API.
 package patreon
