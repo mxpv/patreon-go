@@ -39,8 +39,9 @@ type User struct {
 
 // UserResponse wraps Patreon's fetch user API response
 type UserResponse struct {
-	Data  User `json:"data"`
-	Links struct {
+	Data     User     `json:"data"`
+	Included Includes `json:"included"`
+	Links    struct {
 		Self string `json:"self"`
 	} `json:"links"`
 }
