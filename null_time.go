@@ -13,14 +13,6 @@ type NullTime struct {
 	Valid bool
 }
 
-// MarshalJSON implements json.Marshaler, it will encode null if this time is null.
-func (t *NullTime) MarshalJSON() ([]byte, error) {
-	if !t.Valid {
-		return []byte("null"), nil
-	}
-	return t.Time.MarshalJSON()
-}
-
 // UnmarshalJSON implements json.Unmarshaler with JSON "null" support
 func (t *NullTime) UnmarshalJSON(data []byte) error {
 	s := string(data)
