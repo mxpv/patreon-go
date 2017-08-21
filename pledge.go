@@ -1,7 +1,5 @@
 package patreon
 
-import "time"
-
 // PledgeDefaultRelations specifies default includes for Pledge.
 const PledgeDefaultRelations = "patron,reward,creator,address,pledge_vat_location"
 
@@ -11,11 +9,11 @@ type Pledge struct {
 	Type       string `json:"type"`
 	Id         string `json:"id"`
 	Attributes struct {
-		AmountCents    int       `json:"amount_cents"`
-		CreatedAt      time.Time `json:"created_at"`
-		DeclinedSince  time.Time `json:"declined_since"`
-		PledgeCapCents int       `json:"pledge_cap_cents"`
-		PatronPaysFees bool      `json:"patron_pays_fees"`
+		AmountCents    int      `json:"amount_cents"`
+		CreatedAt      NullTime `json:"created_at"`
+		DeclinedSince  NullTime `json:"declined_since"`
+		PledgeCapCents int      `json:"pledge_cap_cents"`
+		PatronPaysFees bool     `json:"patron_pays_fees"`
 	} `json:"attributes"`
 	Relationships struct {
 		Patron  *PatronRelationship  `json:"patron"`

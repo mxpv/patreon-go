@@ -40,7 +40,9 @@ func TestParseIncludes(t *testing.T) {
 	pledge, ok := includes.Items[4].(*Pledge)
 	require.True(t, ok)
 	require.Equal(t, 100, pledge.Attributes.AmountCents)
+	require.True(t, pledge.Attributes.CreatedAt.Valid)
 	require.Equal(t, time.Date(2017, 6, 20, 23, 21, 34, 514822000, time.UTC).Unix(), pledge.Attributes.CreatedAt.Unix())
+	require.False(t, pledge.Attributes.DeclinedSince.Valid)
 	require.True(t, pledge.Attributes.PatronPaysFees)
 	require.Equal(t, 100, pledge.Attributes.PledgeCapCents)
 
