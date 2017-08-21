@@ -12,7 +12,7 @@ func TestParseIncludes(t *testing.T) {
 	includes := Includes{}
 	err := json.Unmarshal([]byte(includesJson), &includes)
 	require.NoError(t, err)
-	require.Len(t, includes.Items, 5)
+	require.Len(t, includes.Items, 6)
 
 	user, ok := includes.Items[0].(*User)
 	require.True(t, ok)
@@ -43,6 +43,21 @@ func TestParseIncludes(t *testing.T) {
 	require.Equal(t, time.Date(2017, 6, 20, 23, 21, 34, 514822000, time.UTC).Unix(), pledge.Attributes.CreatedAt.Unix())
 	require.True(t, pledge.Attributes.PatronPaysFees)
 	require.Equal(t, 100, pledge.Attributes.PledgeCapCents)
+
+	card, ok := includes.Items[5].(*Card)
+	require.True(t, ok)
+	require.Equal(t, "bt_12312312", card.Id)
+	require.Equal(t, "card", card.Type)
+	require.Equal(t, "PayPal", card.Attributes.CardType)
+	require.True(t, card.Attributes.HasFailedPayment)
+	require.True(t, card.Attributes.IsVerified)
+	require.Equal(t, "12312312", card.Attributes.Number)
+	require.Equal(t, "bt_12312312", card.Attributes.PaymentToken)
+	require.Equal(t, 12312312, card.Attributes.PaymentTokenID)
+	require.NotNil(t, card.Relationships.User)
+	require.Equal(t, "https://www.patreon.com/api/user/4221587", card.Relationships.User.Links.Related)
+	require.Equal(t, "12312312", card.Relationships.User.Data.Id)
+	require.Equal(t, "user", card.Relationships.User.Data.Type)
 }
 
 func TestParseUnsupportedInclude(t *testing.T) {
@@ -130,6 +145,31 @@ const includesJson = `
 			}
 		},
 		"type": "pledge"
+	},
+	{
+		"attributes": {
+			"card_type": "PayPal",
+			"created_at": "2016-12-24T18:18:22+00:00",
+			"expiration_date": null,
+			"has_a_failed_payment": true,
+			"is_verified": true,
+			"number": "12312312",
+			"payment_token": "bt_12312312",
+			"payment_token_id": 12312312
+		},
+		"id": "bt_12312312",
+		"relationships": {
+			"user": {
+				"data": {
+					"id": "12312312",
+					"type": "user"
+				},
+				"links": {
+					"related": "https://www.patreon.com/api/user/4221587"
+				}
+			}
+		},
+		"type": "card"
 	}
 ]
 `

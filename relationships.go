@@ -24,6 +24,14 @@ type CreatorRelationship struct {
 	} `json:"links"`
 }
 
+// UserRelationship represents 'user' include
+type UserRelationship struct {
+	Data  Data `json:"data"`
+	Links struct {
+		Related string `json:"related"`
+	} `json:"links"`
+}
+
 // PledgesRelationship represents 'pledges' include.
 type PledgesRelationship struct {
 	Data  []Data `json:"data"`
