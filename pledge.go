@@ -14,6 +14,11 @@ type Pledge struct {
 		DeclinedSince  NullTime `json:"declined_since"`
 		PledgeCapCents int      `json:"pledge_cap_cents"`
 		PatronPaysFees bool     `json:"patron_pays_fees"`
+		// Optional properties
+		TotalHistoricalAmountCents    *int  `json:"total_historical_amount_cents"`
+		IsPaused                      *bool `json:"is_paused"`
+		HasShippingAddress            *bool `json:"has_shipping_address"`
+		OutstandingPaymentAmountCents *int  `json:"outstanding_payment_amount_cents"`
 	} `json:"attributes"`
 	Relationships struct {
 		Patron  *PatronRelationship  `json:"patron"`
