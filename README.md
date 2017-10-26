@@ -8,7 +8,7 @@
 
 # patreon-go
 
-`patreon-go` is a Go client library for accessing the [Patreon API](https://www.patreon.com/platform/documentation/api).
+`patreon-go` is a Go client library for accessing the [Patreon API](https://docs.patreon.com/#api).
 
 ## Basic example ##
 
