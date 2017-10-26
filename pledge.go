@@ -7,7 +7,7 @@ const PledgeDefaultRelations = "patron,reward,creator,address,pledge_vat_locatio
 // Valid relationships: patron, reward, creator, address (?), card (?), pledge_vat_location (?).
 type Pledge struct {
 	Type       string `json:"type"`
-	Id         string `json:"id"`
+	ID         string `json:"id"`
 	Attributes struct {
 		AmountCents    int      `json:"amount_cents"`
 		CreatedAt      NullTime `json:"created_at"`

@@ -25,7 +25,7 @@ func Example_fetchPatronsAndPledges() {
 		panic(err)
 	}
 
-	campaignId := campaignResponse.Data[0].Id
+	campaignId := campaignResponse.Data[0].ID
 
 	cursor := ""
 	page := 1
@@ -47,7 +47,7 @@ func Example_fetchPatronsAndPledges() {
 				continue
 			}
 
-			users[u.Id] = u
+			users[u.ID] = u
 		}
 
 		fmt.Printf("Page %d\r\n", page)
@@ -55,7 +55,7 @@ func Example_fetchPatronsAndPledges() {
 		// Loop over the pledges to get e.g. their amount and user name
 		for _, pledge := range pledgesResponse.Data {
 			amount := pledge.Attributes.AmountCents
-			patronId := pledge.Relationships.Patron.Data.Id
+			patronId := pledge.Relationships.Patron.Data.ID
 			patronFullName := users[patronId].Attributes.FullName
 
 			fmt.Printf("%s is pledging %d cents\r\n", patronFullName, amount)

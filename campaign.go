@@ -7,7 +7,7 @@ const CampaignDefaultRelations = "rewards,creator,goals"
 // Valid relationships: rewards, creator, goals, pledges, current_user_pledge, post_aggregation, categories, preview_token.
 type Campaign struct {
 	Type       string `json:"type"`
-	Id         string `json:"id"`
+	ID         string `json:"id"`
 	Attributes struct {
 		Summary                       string   `json:"summary"`
 		CreationName                  string   `json:"creation_name"`

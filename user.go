@@ -7,7 +7,7 @@ const UserDefaultRelations = "campaign,pledges"
 // Valid relationships: pledges, cards, follows, campaign, presence, session, locations, current_user_follow, pledge_to_current_user.
 type User struct {
 	Type       string `json:"type"`
-	Id         string `json:"id"`
+	ID         string `json:"id"`
 	Attributes struct {
 		FirstName       string   `json:"first_name"`
 		LastName        string   `json:"last_name"`

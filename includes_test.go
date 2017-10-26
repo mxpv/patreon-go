@@ -16,25 +16,25 @@ func TestParseIncludes(t *testing.T) {
 
 	user, ok := includes.Items[0].(*User)
 	require.True(t, ok)
-	require.Equal(t, "2822191", user.Id)
+	require.Equal(t, "2822191", user.ID)
 	require.Equal(t, "user", user.Type)
 	require.Equal(t, "podsync", user.Attributes.Vanity)
 
 	reward, ok := includes.Items[1].(*Reward)
 	require.True(t, ok)
-	require.Equal(t, "12312312", reward.Id)
+	require.Equal(t, "12312312", reward.ID)
 	require.Equal(t, "reward", reward.Type)
 	require.Equal(t, 100, reward.Attributes.Amount)
 
 	goal, ok := includes.Items[2].(*Goal)
 	require.True(t, ok)
-	require.Equal(t, "2131231", goal.Id)
+	require.Equal(t, "2131231", goal.ID)
 	require.Equal(t, "goal", goal.Type)
 	require.Equal(t, 1000, goal.Attributes.Amount)
 
 	campaign, ok := includes.Items[3].(*Campaign)
 	require.True(t, ok)
-	require.Equal(t, "12312321", campaign.Id)
+	require.Equal(t, "12312321", campaign.ID)
 	require.Equal(t, "campaign", campaign.Type)
 
 	pledge, ok := includes.Items[4].(*Pledge)
@@ -48,7 +48,7 @@ func TestParseIncludes(t *testing.T) {
 
 	card, ok := includes.Items[5].(*Card)
 	require.True(t, ok)
-	require.Equal(t, "bt_12312312", card.Id)
+	require.Equal(t, "bt_12312312", card.ID)
 	require.Equal(t, "card", card.Type)
 	require.Equal(t, "PayPal", card.Attributes.CardType)
 	require.True(t, card.Attributes.HasFailedPayment)
@@ -58,7 +58,7 @@ func TestParseIncludes(t *testing.T) {
 	require.Equal(t, 12312312, card.Attributes.PaymentTokenID)
 	require.NotNil(t, card.Relationships.User)
 	require.Equal(t, "https://www.patreon.com/api/user/4221587", card.Relationships.User.Links.Related)
-	require.Equal(t, "12312312", card.Relationships.User.Data.Id)
+	require.Equal(t, "12312312", card.Relationships.User.Data.ID)
 	require.Equal(t, "user", card.Relationships.User.Data.Type)
 }
 

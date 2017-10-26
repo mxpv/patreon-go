@@ -21,7 +21,7 @@ func TestFetchCampaign(t *testing.T) {
 
 	require.Equal(t, 1, len(resp.Data))
 	require.Equal(t, "campaign", resp.Data[0].Type)
-	require.Equal(t, "278915", resp.Data[0].Id)
+	require.Equal(t, "278915", resp.Data[0].ID)
 	require.Equal(t, "new podcasting experience - Podsync", resp.Data[0].Attributes.CreationName)
 
 	// Attributes
@@ -46,33 +46,33 @@ func TestFetchCampaign(t *testing.T) {
 
 	creator := resp.Data[0].Relationships.Creator
 	require.NotNil(t, creator)
-	require.Equal(t, "2343242423", creator.Data.Id)
+	require.Equal(t, "2343242423", creator.Data.ID)
 	require.Equal(t, "user", creator.Data.Type)
 	require.Equal(t, "https://www.patreon.com/api/user/2343242423", creator.Links.Related)
 
 	categories := resp.Data[0].Relationships.Categories
 	require.NotNil(t, categories)
 	require.Equal(t, 1, len(categories.Data))
-	require.Equal(t, "7", categories.Data[0].Id)
+	require.Equal(t, "7", categories.Data[0].ID)
 	require.Equal(t, "category", categories.Data[0].Type)
 
 	// Includes
 
 	user, ok := resp.Included.Items[0].(*User)
 	require.True(t, ok)
-	require.Equal(t, "2822191", user.Id)
+	require.Equal(t, "2822191", user.ID)
 	require.Equal(t, "user", user.Type)
 	require.Equal(t, "podsync", user.Attributes.Vanity)
 
 	reward, ok := resp.Included.Items[1].(*Reward)
 	require.True(t, ok)
-	require.Equal(t, "12312312", reward.Id)
+	require.Equal(t, "12312312", reward.ID)
 	require.Equal(t, "reward", reward.Type)
 	require.Equal(t, 100, reward.Attributes.Amount)
 
 	goal, ok := resp.Included.Items[2].(*Goal)
 	require.True(t, ok)
-	require.Equal(t, "2131231", goal.Id)
+	require.Equal(t, "2131231", goal.ID)
 	require.Equal(t, "goal", goal.Type)
 	require.Equal(t, 1000, goal.Attributes.Amount)
 }

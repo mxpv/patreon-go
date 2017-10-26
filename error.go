@@ -5,7 +5,7 @@ type Error struct {
 	Code     int    `json:"code"`
 	CodeName string `json:"code_name"`
 	Detail   string `json:"detail"`
-	Id       string `json:"id"`
+	ID       string `json:"id"`
 	Status   string `json:"status"`
 	Title    string `json:"title"`
 }

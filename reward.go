@@ -3,7 +3,7 @@ package patreon
 // Reward represents a Patreon's reward.
 type Reward struct {
 	Type       string `json:"type"`
-	Id         string `json:"id"`
+	ID         string `json:"id"`
 	Attributes struct {
 		Amount           int      `json:"amount"`
 		AmountCents      int      `json:"amount_cents"`

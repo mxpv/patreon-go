@@ -2,7 +2,7 @@ package patreon
 
 // Data represents a link to entity.
 type Data struct {
-	Id   string `json:"id"`
+	ID   string `json:"id"`
 	Type string `json:"type"`
 }
 

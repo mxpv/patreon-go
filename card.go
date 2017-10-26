@@ -3,7 +3,7 @@ package patreon
 // Card represents Patreon's credit card or paypal account.
 type Card struct {
 	Type       string `json:"type"`
-	Id         string `json:"id"`
+	ID         string `json:"id"`
 	Attributes struct {
 		// PayPal
 		CardType         string   `json:"card_type"`

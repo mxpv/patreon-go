@@ -20,7 +20,7 @@ func TestFetchUser(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "https://www.patreon.com/api/user/3232132131", resp.Links.Self)
 	require.Equal(t, "user", resp.Data.Type)
-	require.Equal(t, "3232132131", resp.Data.Id)
+	require.Equal(t, "3232132131", resp.Data.ID)
 
 	// Attributes
 
@@ -48,7 +48,7 @@ func TestFetchUser(t *testing.T) {
 	pledges := resp.Data.Relationships.Pledges
 	require.NotNil(t, pledges)
 	require.Len(t, pledges.Data, 1)
-	require.Equal(t, "2444714", pledges.Data[0].Id)
+	require.Equal(t, "2444714", pledges.Data[0].ID)
 	require.Equal(t, "pledge", pledges.Data[0].Type)
 }
 
