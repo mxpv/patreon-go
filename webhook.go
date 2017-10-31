@@ -22,8 +22,12 @@ const (
 	HeaderEventType = "X-Patreon-Event"
 
 	// HeaderEventSignature specifies message signature HTTP header name to verify message body
-	HeaderEventSignature = "X-Patreon-Signature"
+	HeaderSignature = "X-Patreon-Signature"
 )
+
+type WebhookPledge struct {
+	Data Pledge `json:"data"`
+}
 
 // VerifySignature verifies the sender of the message
 func VerifySignature(message []byte, secret string, signature string) (bool, error) {
