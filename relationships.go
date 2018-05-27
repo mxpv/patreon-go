@@ -83,3 +83,11 @@ type PatronRelationship struct {
 		Related string `json:"related"`
 	} `json:"links"`
 }
+
+// AddressRelationship represents 'address' include.
+type AddressRelationship struct {
+	Data  Data `json:"data"`
+	Links struct {
+		Related string `json:"related"`
+	} `json:"links"`
+}

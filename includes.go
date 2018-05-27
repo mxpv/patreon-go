@@ -46,6 +46,8 @@ func (i *Includes) UnmarshalJSON(b []byte) error {
 			obj = &Pledge{}
 		} else if s.Type == "card" {
 			obj = &Card{}
+		} else if s.Type == "address" {
+			obj = &Address{}
 		} else {
 			return fmt.Errorf("unsupported type '%s'", s.Type)
 		}
