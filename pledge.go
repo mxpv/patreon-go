@@ -24,6 +24,7 @@ type Pledge struct {
 		Patron  *PatronRelationship  `json:"patron"`
 		Reward  *RewardRelationship  `json:"reward"`
 		Creator *CreatorRelationship `json:"creator"`
+		Address *AddressRelationship `json:"address"`
 	} `json:"relationships"`
 }
 
