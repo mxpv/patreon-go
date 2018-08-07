@@ -10,10 +10,21 @@
 
 `patreon-go` is a Go client library for accessing the [Patreon API](https://docs.patreon.com/#api).
 
+## How to import ##
+
+The `patreon-go` package may be installed by running:
+```
+go get gopkg.in/mxpv/patreon-go.v1
+```
+or
+```
+import "gopkg.in/mxpv/patreon-go.v1"
+```
+
 ## Basic example ##
 
 ```go
-import "github.com/mxpv/patreon-go"
+import "gopkg.in/mxpv/patreon-go.v1"
 
 func main() {
 	client := patreon.NewClient(nil)
@@ -35,7 +46,7 @@ Here is an example with static token:
 
 ```go
 import (
-	"github.com/mxpv/patreon-go"
+	"gopkg.in/mxpv/patreon-go.v1"
 	"golang.org/x/oauth2"
 )
 
