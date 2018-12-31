@@ -1,6 +1,6 @@
 package patreon
 
-// Address represents patron's shipping address
+// AddressAttributes represent patron's shipping address attributes
 type AddressAttributes struct {
 	// Full recipient name. Can be null.
 	Addressee string `json:"addressee"`
@@ -22,7 +22,7 @@ type AddressAttributes struct {
 	CreatedAt NullTime `json:"created_at"`
 }
 
-// Benefit represents a benefit added to the campaign, which can be added to a tier to be delivered to the patron.
+// BenefitAttributes represent a benefit attributes added to the campaign.
 type BenefitAttributes struct {
 	// Benefit display title
 	Title string `json:"title"`
@@ -54,7 +54,7 @@ type BenefitAttributes struct {
 	AppMeta interface{} `json:"app_meta"`
 }
 
-// The creator's page, and the top-level object for accessing lists of members, tiers, etc.
+// CampaignAttributes represents the creator's page attributes.
 type CampaignAttributes struct {
 	// The creator's summary of their campaign. Can be null.
 	Summary string `json:"summary"`
@@ -108,7 +108,7 @@ type CampaignAttributes struct {
 	EarningsVisibility string `json:"earnings_visibility"`
 }
 
-// The record of whether or not a patron has been delivered the benefitthey are owed because of their member tier.
+// DeliverableAttributes represents deliverable attributes.
 type DeliverableAttributes struct {
 	// When the creator marked the deliverable as completed or fulfilled to the patron. Can be null.
 	CreatedAt NullTime `json:"created_at"`
@@ -118,7 +118,7 @@ type DeliverableAttributes struct {
 	DueAt NullTime `json:"due_at"`
 }
 
-// A funding goal in USD set by a creator on a campaign.
+// GoalAttributes represents a funding goal in USD set by a creator on a campaign.
 type GoalAttributes struct {
 	// Goal amount in USD cents.
 	AmountCents int `json:"amount_cents"`
@@ -134,7 +134,7 @@ type GoalAttributes struct {
 	CompletedPercentage int `json:"completed_percentage"`
 }
 
-// A file uploaded to patreon.com, usually an image.
+// MediaAttributes represents a file's attributes uploaded to patreon.com.
 type MediaAttributes struct {
 	// File name.
 	FileName string `json:"file_name"`
@@ -164,7 +164,7 @@ type MediaAttributes struct {
 	Metadata interface{} `json:"metadata"`
 }
 
-// The record of a user's membership to a campaign. Remains consistent across months of pledging.
+// MemberAttributes represents membership attributes.
 type MemberAttributes struct {
 	// One of active_patron, declined_patron, former_patron. Can be null.
 	PatronStatus string `json:"patron_status"`
@@ -194,7 +194,7 @@ type MemberAttributes struct {
 	WillPayAmountCents int `json:"will_pay_amount_cents"`
 }
 
-// A client created by a developer, used for getting OAuth2 access tokens.
+// OAuthClientAttributes represents a client's attributes.
 type OAuthClientAttributes struct {
 	// The client's secret.
 	ClientSecret string `json:"client_secret"`
@@ -220,7 +220,7 @@ type OAuthClientAttributes struct {
 	DefaultScopes string `json:"default_scopes"`
 }
 
-// A membership level on a campaign, which can have benefits attached to it.
+// TierAttributes represents a membership level attributes.
 type TierAttributes struct {
 	// Monetary amount associated with this tier (in U.S. cents).
 	AmountCents int `json:"amount_cents"`
@@ -256,7 +256,7 @@ type TierAttributes struct {
 	UnpublishedAt NullTime `json:"unpublished_at"`
 }
 
-// The Patreon user, which can be both patron and creator.
+// UserAttributes represent the Patreon user attributes.
 type UserAttributes struct {
 	// The user's email address. Requires certain scopes to access. See the scopes section of this documentation.
 	Email             string      `json:"email"`
@@ -291,7 +291,7 @@ type UserAttributes struct {
 	SocialConnections interface{} `json:"social_connections"`
 }
 
-// Webhooks are fired based on events happening on a particular campaign.
+// WebhookAttributes represent webhook attributes.
 type WebhookAttributes struct {
 	// List of events that will trigger this webhook.
 	Triggers                  []string `json:"triggers"`
