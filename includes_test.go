@@ -2,178 +2,78 @@ package patreon
 
 import (
 	"encoding/json"
-	"testing"
-	"time"
-
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func TestParseIncludes(t *testing.T) {
-	includes := Includes{}
+	includes := IncludedItems{}
 	err := json.Unmarshal([]byte(includesJson), &includes)
 	require.NoError(t, err)
-	require.Len(t, includes.Items, 6)
+	require.Len(t, includes.Items, 3)
 
-	user, ok := includes.Items[0].(*User)
+	address, ok := includes.Items[0].Attr.(*AddressAttributes)
 	require.True(t, ok)
-	require.Equal(t, "2822191", user.ID)
-	require.Equal(t, "user", user.Type)
-	require.Equal(t, "podsync", user.Attributes.Vanity)
 
-	reward, ok := includes.Items[1].(*Reward)
-	require.True(t, ok)
-	require.Equal(t, "12312312", reward.ID)
-	require.Equal(t, "reward", reward.Type)
-	require.Equal(t, 100, reward.Attributes.Amount)
+	assert.Equal(t, "Platform Team", address.Addressee)
+	assert.Equal(t, "San Francisco", address.City)
+	assert.Equal(t, "US", address.Country)
 
-	goal, ok := includes.Items[2].(*Goal)
+	user, ok := includes.Items[1].Attr.(*UserAttributes)
 	require.True(t, ok)
-	require.Equal(t, "2131231", goal.ID)
-	require.Equal(t, "goal", goal.Type)
-	require.Equal(t, 1000, goal.Attributes.Amount)
 
-	campaign, ok := includes.Items[3].(*Campaign)
-	require.True(t, ok)
-	require.Equal(t, "12312321", campaign.ID)
-	require.Equal(t, "campaign", campaign.Type)
+	assert.Equal(t, "Platform Team", user.FullName)
+	assert.True(t, user.HidePledges)
 
-	pledge, ok := includes.Items[4].(*Pledge)
+	tier, ok := includes.Items[2].Attr.(*TierAttributes)
 	require.True(t, ok)
-	require.Equal(t, 100, pledge.Attributes.AmountCents)
-	require.True(t, pledge.Attributes.CreatedAt.Valid)
-	require.Equal(t, time.Date(2017, 6, 20, 23, 21, 34, 514822000, time.UTC).Unix(), pledge.Attributes.CreatedAt.Unix())
-	require.False(t, pledge.Attributes.DeclinedSince.Valid)
-	require.True(t, pledge.Attributes.PatronPaysFees)
-	require.Equal(t, 100, pledge.Attributes.PledgeCapCents)
 
-	card, ok := includes.Items[5].(*Card)
-	require.True(t, ok)
-	require.Equal(t, "bt_12312312", card.ID)
-	require.Equal(t, "card", card.Type)
-	require.Equal(t, "PayPal", card.Attributes.CardType)
-	require.True(t, card.Attributes.HasFailedPayment)
-	require.True(t, card.Attributes.IsVerified)
-	require.Equal(t, "12312312", card.Attributes.Number)
-	require.Equal(t, "bt_12312312", card.Attributes.PaymentToken)
-	require.Equal(t, 12312312, card.Attributes.PaymentTokenID)
-	require.NotNil(t, card.Relationships.User)
-	require.Equal(t, "https://www.patreon.com/api/user/4221587", card.Relationships.User.Links.Related)
-	require.Equal(t, "12312312", card.Relationships.User.Data.ID)
-	require.Equal(t, "user", card.Relationships.User.Data.Type)
+	assert.Equal(t, "Tshirt Tier", tier.Title)
 }
 
 func TestParseUnsupportedInclude(t *testing.T) {
-	includes := Includes{}
+	includes := IncludedItems{}
 	err := json.Unmarshal([]byte(unknownIncludeJson), &includes)
 	require.Error(t, err)
-	require.Equal(t, "unsupported type 'unknown'", err.Error())
+	require.EqualError(t, err, "unsupported type 'unknown'")
 }
 
 const includesJson = `
 [
-	{
-		"attributes": {
-			"vanity": "podsync"
-		},
-		"id": "2822191",
-		"relationships": {},
-		"type": "user"
-	},
-	{
-		"attributes": {
-			"amount": 100
-		},
-		"id": "12312312",
-		"relationships": {},
-		"type": "reward"
-	},
-	{
-		"attributes": {
-			"amount": 1000
-		},
-		"id": "2131231",
-		"type": "goal"
-	},
-	{
-		"attributes": {},
-		"id": "12312321",
-		"type": "campaign"
-	},
-	{
-		"attributes": {
-			"amount_cents": 100,
-			"created_at": "2017-06-20T23:21:34.514822+00:00",
-			"declined_since": null,
-			"patron_pays_fees": true,
-			"pledge_cap_cents": 100
-		},
-		"id": "2321312",
-		"relationships": {
-			"card": {
-				"data": {
-					"id": "bt_1231232132",
-					"type": "card"
-				},
-				"links": {
-					"related": "https://www.patreon.com/api/cards/bt_123123213"
-				}
-			},
-			"creator": {
-				"data": {
-					"id": "12312321321312",
-					"type": "user"
-				},
-				"links": {
-					"related": "https://www.patreon.com/api/user/12312321321312"
-				}
-			},
-			"patron": {
-				"data": {
-					"id": "213213213",
-					"type": "user"
-				},
-				"links": {
-					"related": "https://www.patreon.com/api/user/213213213"
-				}
-			},
-			"reward": {
-				"data": {
-					"id": "12312321321",
-					"type": "reward"
-				},
-				"links": {
-					"related": "https://www.patreon.com/api/rewards/12312321321"
-				}
-			}
-		},
-		"type": "pledge"
-	},
-	{
-		"attributes": {
-			"card_type": "PayPal",
-			"created_at": "2016-12-24T18:18:22+00:00",
-			"expiration_date": null,
-			"has_a_failed_payment": true,
-			"is_verified": true,
-			"number": "12312312",
-			"payment_token": "bt_12312312",
-			"payment_token_id": 12312312
-		},
-		"id": "bt_12312312",
-		"relationships": {
-			"user": {
-				"data": {
-					"id": "12312312",
-					"type": "user"
-				},
-				"links": {
-					"related": "https://www.patreon.com/api/user/4221587"
-				}
-			}
-		},
-		"type": "card"
-	}
-]
+        {
+            "attributes": {
+                "addressee": "Platform Team",
+                "city": "San Francisco",
+                "confirmed": true,
+                "confirmed_at": null,
+                "country": "US",
+                "created_at": "2018-06-03T16:23:38+00:00",
+                "line_1": "555 Main St",
+                "line_2": "",
+                "phone_number": null,
+                "postal_code": "94103",
+                "state": "CA"
+            },
+            "id": "123456",
+            "type": "address"
+        },
+        {
+            "attributes": {
+                "full_name": "Platform Team",
+                "hide_pledges": true
+            },
+            "id": "654321",
+            "type": "user"
+        },
+        {
+            "attributes": {
+                "title": "Tshirt Tier"
+            },
+            "id": "99001122",
+            "type": "tier"
+        }
+    ]
 `
 
 const unknownIncludeJson = `

@@ -77,9 +77,9 @@ type Member struct {
 type OAuthClient struct {
 	OAuthClientAttributes
 	// The user who created the OAuth Client.
-	User         *UserV2
+	User *UserV2
 	// The campaign of the user who created the OAuth Client.
-	Campaign     *CampaignV2
+	Campaign *CampaignV2
 	// The token of the user who created the client.
 	CreatorToken string
 }
@@ -88,16 +88,17 @@ type OAuthClient struct {
 type Tier struct {
 	TierAttributes
 	// The campaign the tier belongs to.
-	Campaign  *CampaignV2
+	Campaign *CampaignV2
 	// The image file associated with the tier.
 	TierImage *Media
 	// The benefits attached to the tier, which are used for generating deliverables
-	Benefits  []*Benefit
+	Benefits []*Benefit
 }
 
 // User represents the Patreon user, which can be both patron and creator.
 type UserV2 struct {
-	UserAttributes
+	*UserAttributes
+	ID string
 	// Usually a zero or one-element array with the user's membership to the token creator's campaign,
 	// if they are a member. With the identity.memberships scope, this returns memberships to ALL campaigns the user is
 	// a member of.
@@ -109,7 +110,7 @@ type UserV2 struct {
 type Webhook struct {
 	WebhookAttributes
 	// The client which created the webhook
-	Client   *OAuthClient
+	Client *OAuthClient
 	// The campaign whose events trigger the webhook.
 	Campaign *CampaignV2
 }
