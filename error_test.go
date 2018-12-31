@@ -2,6 +2,7 @@ package patreon
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 
@@ -14,7 +15,8 @@ func TestErrorResponse(t *testing.T) {
 
 	mux.HandleFunc("/oauth2/api/current_user", func(writer http.ResponseWriter, request *http.Request) {
 		writer.WriteHeader(http.StatusForbidden)
-		fmt.Fprint(writer, errorResp)
+		_, err := fmt.Fprint(writer, errorResp)
+		assert.NoError(t, err)
 	})
 
 	// _, err := client.FetchUser()
