@@ -26,6 +26,11 @@ func (i *IncludedItems) UnmarshalJSON(b []byte) error {
 	}
 
 	for _, item := range items {
+		// Check if empty JSON block '{}'
+		if len(item.Raw) == 2 && item.Raw[0] == 123 && item.Raw[1] == 125 {
+			continue
+		}
+
 		switch item.Type {
 		case "address":
 			item.Attr = &AddressAttributes{}
@@ -39,6 +44,7 @@ func (i *IncludedItems) UnmarshalJSON(b []byte) error {
 			return fmt.Errorf("unsupported type '%s'", item.Type)
 		}
 
+		// Deserialize attributes
 		if err := json.Unmarshal(item.Raw, item.Attr); err != nil {
 			return err
 		}
