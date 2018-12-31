@@ -48,7 +48,7 @@ func (c *Client) Client() *http.Client {
 // FetchUser fetches a patron's profile info.
 // This API returns a representation of the user who granted your OAuth client the provided access_token.
 // It is most typically used in the OAuth "Log in with Patreon" flow to create or update the user's account on your site.
-func (c *Client) FetchUser(opts ...requestOption) (*UserResponse, error) {
+func (c *Client) FetchUser(opts ...RequestOpt) (*UserResponse, error) {
 	resp := &UserResponse{}
 	err := c.get("/oauth2/api/current_user", resp, opts...)
 	return resp, err
@@ -58,7 +58,7 @@ func (c *Client) FetchUser(opts ...requestOption) (*UserResponse, error) {
 // This API returns a representation of the user's campaign, including its rewards and goals, and the pledges to it.
 // If there are more than twenty pledges to the campaign, the first twenty will be returned, along with a link to the
 // next page of pledges.
-func (c *Client) FetchCampaign(opts ...requestOption) (*CampaignResponse, error) {
+func (c *Client) FetchCampaign(opts ...RequestOpt) (*CampaignResponse, error) {
 	resp := &CampaignResponse{}
 	err := c.get("/oauth2/api/current_user/campaigns", resp, opts...)
 	return resp, err
@@ -68,14 +68,14 @@ func (c *Client) FetchCampaign(opts ...requestOption) (*CampaignResponse, error)
 // This API returns a list of pledges to the provided campaignId. They are sorted by the date the pledge was made,
 // and provide relationship references to the users who made each respective pledge. The API response will also contain
 // a links section which may be used to fetch the next page of pledges, or go back to the first page.
-func (c *Client) FetchPledges(campaignId string, opts ...requestOption) (*PledgeResponse, error) {
+func (c *Client) FetchPledges(campaignId string, opts ...RequestOpt) (*PledgeResponse, error) {
 	resp := &PledgeResponse{}
 	path := fmt.Sprintf("/oauth2/api/campaigns/%s/pledges", campaignId)
 	err := c.get(path, resp, opts...)
 	return resp, err
 }
 
-func (c *Client) buildURL(path string, opts ...requestOption) (string, error) {
+func (c *Client) buildURL(path string, opts ...RequestOpt) (string, error) {
 	cfg := getOptions(opts...)
 
 	u, err := url.ParseRequestURI(c.baseURL + path)
@@ -88,11 +88,9 @@ func (c *Client) buildURL(path string, opts ...requestOption) (string, error) {
 		q.Set("include", cfg.include)
 	}
 
-	if len(cfg.fields) > 0 {
-		for resource, fields := range cfg.fields {
-			key := fmt.Sprintf("fields[%s]", resource)
-			q.Set(key, fields)
-		}
+	for resource, fields := range cfg.fields {
+		key := fmt.Sprintf("fields[%s]", resource)
+		q.Set(key, fields)
 	}
 
 	if cfg.size != 0 {
@@ -107,7 +105,7 @@ func (c *Client) buildURL(path string, opts ...requestOption) (string, error) {
 	return u.String(), nil
 }
 
-func (c *Client) get(path string, v interface{}, opts ...requestOption) error {
+func (c *Client) get(path string, v interface{}, opts ...RequestOpt) error {
 	addr, err := c.buildURL(path, opts...)
 	if err != nil {
 		return err
