@@ -26,14 +26,6 @@ type Client struct {
 	baseURL    string
 }
 
-type data struct {
-	Data *relationItem `json:"data"`
-}
-
-type dataArray struct {
-	Data []*relationItem `json:"data"`
-}
-
 // NewClient returns a new Patreon API client. If a nil httpClient is
 // provided, http.DefaultClient will be used. To use API methods which require
 // authentication, provide an http.Client that will perform the authentication
@@ -64,7 +56,7 @@ func (c *Client) Identity(opts ...RequestOpt) (*User, error) {
 			ID         string          `json:"id"`
 			Attributes *UserAttributes `json:"attributes"`
 		} `json:"data"`
-		Included IncludedItems `json:"included"`
+		Included includedItems `json:"included"`
 	}{}
 
 	if err := c.get("/api/oauth2/v2/identity", &resp, opts...); err != nil {
@@ -114,7 +106,7 @@ func (c *Client) Campaigns(opts ...RequestOpt) ([]*Campaign, error) {
 				Tiers    dataArray `json:"tiers"`
 			} `json:"relationships"`
 		} `json:"data"`
-		Included IncludedItems `json:"included"`
+		Included includedItems `json:"included"`
 	}{}
 
 	if err := c.get("/api/oauth2/v2/campaigns", &resp, opts...); err != nil {

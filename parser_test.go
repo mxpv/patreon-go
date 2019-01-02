@@ -70,7 +70,7 @@ const emptyInclude = `
 `
 
 func TestParseIncludes(t *testing.T) {
-	includes := IncludedItems{}
+	includes := includedItems{}
 	err := json.Unmarshal([]byte(includesJson), &includes)
 	require.NoError(t, err)
 	require.Len(t, includes.Items, 3)
@@ -95,14 +95,14 @@ func TestParseIncludes(t *testing.T) {
 }
 
 func TestParseUnsupportedInclude(t *testing.T) {
-	includes := IncludedItems{}
+	includes := includedItems{}
 	err := json.Unmarshal([]byte(unknownIncludeJson), &includes)
 	require.Error(t, err)
 	require.EqualError(t, err, "unsupported type 'unknown'")
 }
 
 func TestEmptyInclude(t *testing.T) {
-	includes := IncludedItems{}
+	includes := includedItems{}
 	err := json.Unmarshal([]byte(emptyInclude), &includes)
 	require.NoError(t, err)
 	require.Len(t, includes.Items, 1)

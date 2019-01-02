@@ -12,11 +12,6 @@ type jsonItem struct {
 	Attr interface{}     `json:"-"`
 }
 
-type relationItem struct {
-	ID   string `json:"id"`
-	Type string `json:"type"`
-}
-
 func (i *jsonItem) toCampaign() (*Campaign, error) {
 	if i.Type != "campaign" {
 		return nil, fmt.Errorf("can't convert %q to campaign", i.Type)
@@ -131,14 +126,27 @@ func (i *jsonItem) toBenefit() (*Benefit, error) {
 	return benefit, nil
 }
 
+type relationItem struct {
+	ID   string `json:"id"`
+	Type string `json:"type"`
+}
+
+type data struct {
+	Data *relationItem `json:"data"`
+}
+
+type dataArray struct {
+	Data []*relationItem `json:"data"`
+}
+
 // Includes wraps 'includes' JSON field to handle objects of different type within an array.
-type IncludedItems struct {
+type includedItems struct {
 	Items []*jsonItem
 }
 
 // UnmarshalJSON deserializes 'includes' field into the appropriate structs depending on the 'type' field.
 // See http://gregtrowbridge.com/golang-json-serialization-with-interfaces/ for implementation details.
-func (i *IncludedItems) UnmarshalJSON(b []byte) error {
+func (i *includedItems) UnmarshalJSON(b []byte) error {
 	var items []*jsonItem
 	if err := json.Unmarshal(b, &items); err != nil {
 		return err
@@ -175,7 +183,7 @@ func (i *IncludedItems) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (i *IncludedItems) findBy(relation *relationItem) (*jsonItem, error) {
+func (i *includedItems) findBy(relation *relationItem) (*jsonItem, error) {
 	// nil relation means no relation and no error
 	if relation == nil {
 		return nil, nil
