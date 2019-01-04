@@ -51,14 +51,7 @@ func (c *Client) Client() *http.Client {
 // You will not receive email address without that scope.
 // See https://docs.patreon.com/#get-api-oauth2-v2-identity
 func (c *Client) Identity(opts ...RequestOpt) (*User, error) {
-	var resp = struct {
-		Data struct {
-			ID         string          `json:"id"`
-			Attributes *UserAttributes `json:"attributes"`
-		} `json:"data"`
-		Included includedItems `json:"included"`
-	}{}
-
+	var resp = identityResponse{}
 	if err := c.get("/api/oauth2/v2/identity", &resp, opts...); err != nil {
 		return nil, err
 	}
@@ -68,23 +61,12 @@ func (c *Client) Identity(opts ...RequestOpt) (*User, error) {
 		UserAttributes: resp.Data.Attributes,
 	}
 
-	for _, item := range resp.Included.Items {
-		switch item.Type {
-		case "campaign":
-			if campaign, err := item.toCampaign(); err != nil {
-				return nil, err
-			} else {
-				user.Campaign = campaign
-			}
-		case "memberships":
-			if member, err := item.toMember(); err != nil {
-				return nil, err
-			} else {
-				user.Memberships = append(user.Memberships, member)
-			}
-		default:
-			return nil, fmt.Errorf("unexpected include type %q", item.Type)
-		}
+	if resp.Data.Relationships.Campaign.Data != nil {
+		user.Campaign = resp.Included.campaigns[resp.Data.Relationships.Campaign.Data.ID]
+	}
+
+	for _, value := range resp.Included.memberships {
+		user.Memberships = append(user.Memberships, value)
 	}
 
 	return &user, nil
@@ -95,20 +77,7 @@ func (c *Client) Identity(opts ...RequestOpt) (*User, error) {
 // Top-level includes: tiers, creator, benefits, goals.
 // See https://docs.patreon.com/#get-api-oauth2-v2-campaigns
 func (c *Client) Campaigns(opts ...RequestOpt) ([]*Campaign, error) {
-	var resp = struct {
-		Data []struct {
-			ID            string              `json:"id"`
-			Attributes    *CampaignAttributes `json:"attributes"`
-			Relationships struct {
-				Benefits dataArray `json:"benefits"`
-				Creator  data      `json:"creator"`
-				Goals    dataArray `json:"goals"`
-				Tiers    dataArray `json:"tiers"`
-			} `json:"relationships"`
-		} `json:"data"`
-		Included includedItems `json:"included"`
-	}{}
-
+	var resp campaignListResponse
 	if err := c.get("/api/oauth2/v2/campaigns", &resp, opts...); err != nil {
 		return nil, err
 	}
@@ -126,63 +95,59 @@ func (c *Client) Campaigns(opts ...RequestOpt) ([]*Campaign, error) {
 
 		// Read 'relationships' fields and link 'included' items
 
-		if creator, err := resp.Included.findBy(item.Relationships.Creator.Data); err != nil {
-			return nil, err
-		} else {
-			user, err := creator.toUser()
-			if err != nil {
-				return nil, err
-			}
-
-			campaign.Creator = user
+		if item.Relationships.Creator.Data != nil {
+			campaign.Creator = resp.Included.users[item.Relationships.Creator.Data.ID]
 		}
 
 		for _, relation := range item.Relationships.Benefits.Data {
-			data, err := resp.Included.findBy(relation)
-			if err != nil {
-				return nil, err
-			}
-
-			benefit, err := data.toBenefit()
-			if err != nil {
-				return nil, err
-			}
-
-			campaign.Benefits = append(campaign.Benefits, benefit)
+			campaign.Benefits = append(campaign.Benefits, resp.Included.benefits[relation.ID])
 		}
 
 		for _, relation := range item.Relationships.Goals.Data {
-			data, err := resp.Included.findBy(relation)
-			if err != nil {
-				return nil, err
-			}
-
-			goal, err := data.toGoal()
-			if err != nil {
-				return nil, err
-			}
-
-			campaign.Goals = append(campaign.Goals, goal)
+			campaign.Goals = append(campaign.Goals, resp.Included.goals[relation.ID])
 		}
 
 		for _, relation := range item.Relationships.Tiers.Data {
-			data, err := resp.Included.findBy(relation)
-			if err != nil {
-				return nil, err
-			}
-
-			tier, err := data.toTier()
-			if err != nil {
-				return nil, err
-			}
-
-			campaign.Tiers = append(campaign.Tiers, tier)
+			campaign.Tiers = append(campaign.Tiers, resp.Included.tiers[relation.ID])
 		}
 
 		campaigns[idx] = campaign
 	}
 
 	return campaigns, nil
+}
+
+func (c *Client) Campaign(id string, opts ...RequestOpt) (*Campaign, error) {
+	var resp campaignResponse
+	if err := c.get("/api/oauth2/v2/campaigns/"+id, &resp, opts...); err != nil {
+		return nil, err
+	}
+
+	campaign := &Campaign{
+		ID: resp.Data.ID,
+	}
+
+	if resp.Data.Attributes != nil {
+		campaign.CampaignAttributes = resp.Data.Attributes
+	}
+
+	if resp.Data.Relationships.Creator.Data != nil {
+		campaign.Creator = resp.Included.users[resp.Data.Relationships.Creator.Data.ID]
+	}
+
+	for _, relation := range resp.Data.Relationships.Benefits.Data {
+		campaign.Benefits = append(campaign.Benefits, resp.Included.benefits[relation.ID])
+	}
+
+	for _, relation := range resp.Data.Relationships.Goals.Data {
+		campaign.Goals = append(campaign.Goals, resp.Included.goals[relation.ID])
+	}
+
+	for _, relation := range resp.Data.Relationships.Tiers.Data {
+		campaign.Tiers = append(campaign.Tiers, resp.Included.tiers[relation.ID])
+	}
+
+	return campaign, nil
 }
 
 func (c *Client) buildURL(path string, opts ...RequestOpt) (string, error) {

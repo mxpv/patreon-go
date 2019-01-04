@@ -5,6 +5,69 @@ import (
 	"fmt"
 )
 
+type baseItem struct {
+	ID   string `json:"id"`
+	Type string `json:"type"`
+}
+
+type data struct {
+	Data *baseItem `json:"data"`
+}
+
+type dataArray struct {
+	Data []*baseItem `json:"data"`
+}
+
+type identityRelationships struct {
+	Campaign    data      `json:"campaign"`
+	Memberships dataArray `json:"memberships"`
+}
+
+type identityData struct {
+	ID            string                `json:"id"`
+	Attributes    *UserAttributes       `json:"attributes"`
+	Relationships identityRelationships `json:"relationships"`
+}
+
+type identityResponse struct {
+	Data     identityData `json:"data"`
+	Included includes     `json:"included"`
+}
+
+type campaignRelationships struct {
+	Benefits dataArray `json:"benefits"`
+	Creator  data      `json:"creator"`
+	Goals    dataArray `json:"goals"`
+	Tiers    dataArray `json:"tiers"`
+}
+
+type campaignData struct {
+	ID            string                `json:"id"`
+	Attributes    *CampaignAttributes   `json:"attributes"`
+	Relationships campaignRelationships `json:"relationships"`
+}
+
+type campaignListResponse struct {
+	Data     []campaignData `json:"data"`
+	Included includes       `json:"included"`
+}
+
+type campaignResponse struct {
+	Data     campaignData `json:"data"`
+	Included includes     `json:"included"`
+}
+
+// includes wraps 'includes' JSON field to handle objects of different type within an array.
+type includes struct {
+	addresses   map[string]*Address
+	benefits    map[string]*Benefit
+	campaigns   map[string]*Campaign
+	goals       map[string]*Goal
+	memberships map[string]*Member
+	tiers       map[string]*Tier
+	users       map[string]*User
+}
+
 type jsonItem struct {
 	ID   string          `json:"id"`
 	Type string          `json:"type"`
@@ -12,141 +75,9 @@ type jsonItem struct {
 	Attr interface{}     `json:"-"`
 }
 
-func (i *jsonItem) toCampaign() (*Campaign, error) {
-	if i.Type != "campaign" {
-		return nil, fmt.Errorf("can't convert %q to campaign", i.Type)
-	}
-
-	campaign := &Campaign{ID: i.ID}
-
-	if i.Attr != nil {
-		attrs, ok := i.Attr.(*CampaignAttributes)
-		if !ok {
-			return nil, fmt.Errorf("unable to cast %q (id %q)", i.Type, i.ID)
-		}
-
-		campaign.CampaignAttributes = attrs
-	}
-
-	return campaign, nil
-}
-
-func (i *jsonItem) toMember() (*Member, error) {
-	if i.Type != "memberships" {
-		return nil, fmt.Errorf("can't convert %q to memberships", i.Type)
-	}
-
-	member := &Member{ID: i.ID}
-
-	if i.Attr != nil {
-		attrs, ok := i.Attr.(*MemberAttributes)
-		if !ok {
-			return nil, fmt.Errorf("unable to cast %q (id %q)", i.Type, i.ID)
-		}
-
-		member.MemberAttributes = attrs
-	}
-
-	return member, nil
-}
-
-func (i *jsonItem) toTier() (*Tier, error) {
-	if i.Type != "tier" {
-		return nil, fmt.Errorf("can't convert %q to tier", i.Type)
-	}
-
-	tier := &Tier{ID: i.ID}
-
-	if i.Attr != nil {
-		attrs, ok := i.Attr.(*TierAttributes)
-		if !ok {
-			return nil, fmt.Errorf("unable to cast %q (id %q)", i.Type, i.ID)
-		}
-
-		tier.TierAttributes = attrs
-	}
-
-	return tier, nil
-}
-
-func (i *jsonItem) toGoal() (*Goal, error) {
-	if i.Type != "goal" {
-		return nil, fmt.Errorf("can't convert %q to goal", i.Type)
-	}
-
-	goal := &Goal{ID: i.ID}
-
-	if i.Attr != nil {
-		attrs, ok := i.Attr.(*GoalAttributes)
-		if !ok {
-			return nil, fmt.Errorf("unable to cast %q (id %q)", i.Type, i.ID)
-		}
-
-		goal.GoalAttributes = attrs
-	}
-
-	return goal, nil
-}
-
-func (i *jsonItem) toUser() (*User, error) {
-	if i.Type != "user" {
-		return nil, fmt.Errorf("can't convert %q to user", i.Type)
-	}
-
-	user := &User{ID: i.ID}
-
-	if i.Attr != nil {
-		attrs, ok := i.Attr.(*UserAttributes)
-		if !ok {
-			return nil, fmt.Errorf("unable to cast %q (id %q)", i.Type, i.ID)
-		}
-
-		user.UserAttributes = attrs
-	}
-
-	return user, nil
-}
-
-func (i *jsonItem) toBenefit() (*Benefit, error) {
-	if i.Type != "benefit" {
-		return nil, fmt.Errorf("can't convert %q to benefit", i.Type)
-	}
-
-	benefit := &Benefit{ID: i.ID}
-
-	if i.Attr != nil {
-		attrs, ok := i.Attr.(*BenefitAttributes)
-		if !ok {
-			return nil, fmt.Errorf("unable to cast %q (id %q)", i.Type, i.ID)
-		}
-
-		benefit.BenefitAttributes = attrs
-	}
-
-	return benefit, nil
-}
-
-type relationItem struct {
-	ID   string `json:"id"`
-	Type string `json:"type"`
-}
-
-type data struct {
-	Data *relationItem `json:"data"`
-}
-
-type dataArray struct {
-	Data []*relationItem `json:"data"`
-}
-
-// Includes wraps 'includes' JSON field to handle objects of different type within an array.
-type includedItems struct {
-	Items []*jsonItem
-}
-
 // UnmarshalJSON deserializes 'includes' field into the appropriate structs depending on the 'type' field.
 // See http://gregtrowbridge.com/golang-json-serialization-with-interfaces/ for implementation details.
-func (i *includedItems) UnmarshalJSON(b []byte) error {
+func (i *includes) UnmarshalJSON(b []byte) error {
 	var items []*jsonItem
 	if err := json.Unmarshal(b, &items); err != nil {
 		return err
@@ -154,46 +85,167 @@ func (i *includedItems) UnmarshalJSON(b []byte) error {
 
 	for _, item := range items {
 		// Check if empty JSON block '{}'
-		if len(item.Raw) == 2 && item.Raw[0] == 123 && item.Raw[1] == 125 {
-			continue
-		}
+		isEmpty := len(item.Raw) == 2 && item.Raw[0] == 123 && item.Raw[1] == 125
 
 		switch item.Type {
 		case "address":
-			item.Attr = &AddressAttributes{}
+			address := &Address{
+				ID: item.ID,
+			}
+
+			if !isEmpty {
+				attr := &AddressAttributes{}
+
+				item.Attr = attr
+				if err := json.Unmarshal(item.Raw, item.Attr); err != nil {
+					return err
+				}
+
+				address.AddressAttributes = attr
+			}
+
+			if i.addresses == nil {
+				i.addresses = make(map[string]*Address)
+			}
+
+			i.addresses[address.ID] = address
+
+		case "benefit":
+			benefit := &Benefit{
+				ID: item.ID,
+			}
+
+			if !isEmpty {
+				attr := &BenefitAttributes{}
+
+				item.Attr = attr
+				if err := json.Unmarshal(item.Raw, item.Attr); err != nil {
+					return err
+				}
+
+				benefit.BenefitAttributes = attr
+			}
+
+			if i.benefits == nil {
+				i.benefits = make(map[string]*Benefit)
+			}
+
+			i.benefits[item.ID] = benefit
+
 		case "campaign":
-			item.Attr = &CampaignAttributes{}
+			campaign := &Campaign{
+				ID: item.ID,
+			}
+
+			if !isEmpty {
+				attr := &CampaignAttributes{}
+
+				item.Attr = attr
+				if err := json.Unmarshal(item.Raw, item.Attr); err != nil {
+					return err
+				}
+
+				campaign.CampaignAttributes = attr
+			}
+
+			if i.campaigns == nil {
+				i.campaigns = make(map[string]*Campaign)
+			}
+
+			i.campaigns[item.ID] = campaign
+
 		case "goal":
-			item.Attr = &GoalAttributes{}
+			goal := &Goal{
+				ID: item.ID,
+			}
+
+			if !isEmpty {
+				attr := &GoalAttributes{}
+
+				item.Attr = attr
+				if err := json.Unmarshal(item.Raw, item.Attr); err != nil {
+					return err
+				}
+
+				goal.GoalAttributes = attr
+			}
+
+			if i.goals == nil {
+				i.goals = make(map[string]*Goal)
+			}
+
+			i.goals[item.ID] = goal
+
+		case "memberships":
+			member := &Member{
+				ID: item.ID,
+			}
+
+			if !isEmpty {
+				attr := &MemberAttributes{}
+
+				item.Attr = attr
+				if err := json.Unmarshal(item.Raw, item.Attr); err != nil {
+					return err
+				}
+
+				member.MemberAttributes = attr
+			}
+
+			if i.memberships == nil {
+				i.memberships = make(map[string]*Member)
+			}
+
+			i.memberships[item.ID] = member
+
 		case "tier":
-			item.Attr = &TierAttributes{}
+			tier := &Tier{
+				ID: item.ID,
+			}
+
+			if !isEmpty {
+				attr := &TierAttributes{}
+
+				item.Attr = attr
+				if err := json.Unmarshal(item.Raw, item.Attr); err != nil {
+					return err
+				}
+
+				tier.TierAttributes = attr
+			}
+
+			if i.tiers == nil {
+				i.tiers = make(map[string]*Tier)
+			}
+
+			i.tiers[item.ID] = tier
+
 		case "user":
-			item.Attr = &UserAttributes{}
+			user := &User{
+				ID: item.ID,
+			}
+
+			if !isEmpty {
+				attr := &UserAttributes{}
+
+				item.Attr = attr
+				if err := json.Unmarshal(item.Raw, item.Attr); err != nil {
+					return err
+				}
+
+				user.UserAttributes = attr
+			}
+
+			if i.users == nil {
+				i.users = make(map[string]*User)
+			}
+
+			i.users[item.ID] = user
+
 		default:
 			return fmt.Errorf("unsupported type '%s'", item.Type)
 		}
-
-		// Deserialize attributes
-		if err := json.Unmarshal(item.Raw, item.Attr); err != nil {
-			return err
-		}
 	}
 
-	i.Items = items
 	return nil
-}
-
-func (i *includedItems) findBy(relation *relationItem) (*jsonItem, error) {
-	// nil relation means no relation and no error
-	if relation == nil {
-		return nil, nil
-	}
-
-	for _, data := range i.Items {
-		if data.Type == relation.Type && data.ID == relation.ID {
-			return data, nil
-		}
-	}
-
-	return nil, fmt.Errorf("can't find relation with id %q (type %q)", relation.ID, relation.Type)
 }

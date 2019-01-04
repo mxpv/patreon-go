@@ -70,44 +70,46 @@ const emptyInclude = `
 `
 
 func TestParseIncludes(t *testing.T) {
-	includes := includedItems{}
+	includes := includes{}
 	err := json.Unmarshal([]byte(includesJson), &includes)
 	require.NoError(t, err)
-	require.Len(t, includes.Items, 3)
 
-	address, ok := includes.Items[0].Attr.(*AddressAttributes)
-	require.True(t, ok)
+	require.Len(t, includes.addresses, 1)
+	require.Len(t, includes.users, 1)
+	require.Len(t, includes.tiers, 1)
 
-	assert.Equal(t, "Platform Team", address.Addressee)
-	assert.Equal(t, "San Francisco", address.City)
-	assert.Equal(t, "US", address.Country)
+	for _, address := range includes.addresses {
+		assert.Equal(t, "Platform Team", address.Addressee)
+		assert.Equal(t, "San Francisco", address.City)
+		assert.Equal(t, "US", address.Country)
+	}
 
-	user, ok := includes.Items[1].Attr.(*UserAttributes)
-	require.True(t, ok)
+	for _, user := range includes.users {
+		assert.Equal(t, "Platform Team", user.FullName)
+		assert.True(t, user.HidePledges)
+	}
 
-	assert.Equal(t, "Platform Team", user.FullName)
-	assert.True(t, user.HidePledges)
-
-	tier, ok := includes.Items[2].Attr.(*TierAttributes)
-	require.True(t, ok)
-
-	assert.Equal(t, "Tshirt Tier", tier.Title)
+	for _, tier := range includes.tiers {
+		assert.Equal(t, "Tshirt Tier", tier.Title)
+	}
 }
 
 func TestParseUnsupportedInclude(t *testing.T) {
-	includes := includedItems{}
+	includes := includes{}
 	err := json.Unmarshal([]byte(unknownIncludeJson), &includes)
 	require.Error(t, err)
 	require.EqualError(t, err, "unsupported type 'unknown'")
 }
 
 func TestEmptyInclude(t *testing.T) {
-	includes := includedItems{}
+	includes := includes{}
 	err := json.Unmarshal([]byte(emptyInclude), &includes)
 	require.NoError(t, err)
-	require.Len(t, includes.Items, 1)
+	require.Len(t, includes.campaigns, 1)
 
-	require.Equal(t, "278915", includes.Items[0].ID)
-	require.Equal(t, "campaign", includes.Items[0].Type)
-	require.Nil(t, includes.Items[0].Attr)
+	item, ok := includes.campaigns["278915"]
+	require.True(t, ok)
+
+	require.Equal(t, "278915", item.ID)
+	require.Nil(t, item.CampaignAttributes)
 }
