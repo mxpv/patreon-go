@@ -43,14 +43,14 @@ func (c *Client) Client() *http.Client {
 	return c.httpClient
 }
 
-// Identity fetches the User resource.
+// GetIdentity fetches the User resource.
 // Top-level includes: memberships, campaign.
 // This is the endpoint for accessing information about the current User with reference to the oauth token.
 // With the basic scope of identity, you will receive the user’s public profile information.
 // If you have the identity[email] scope, you will also get the user’s email address.
 // You will not receive email address without that scope.
 // See https://docs.patreon.com/#get-api-oauth2-v2-identity
-func (c *Client) Identity(opts ...RequestOpt) (*User, error) {
+func (c *Client) GetIdentity(opts ...RequestOpt) (*User, error) {
 	var resp = identityResponse{}
 	if err := c.get("/api/oauth2/v2/identity", &resp, opts...); err != nil {
 		return nil, err
@@ -72,11 +72,11 @@ func (c *Client) Identity(opts ...RequestOpt) (*User, error) {
 	return &user, nil
 }
 
-// Campaigns returns a list of Campaigns owned by the authorized user.
+// GetCampaigns returns a list of GetCampaigns owned by the authorized user.
 // Requires the campaigns scope.
 // Top-level includes: tiers, creator, benefits, goals.
 // See https://docs.patreon.com/#get-api-oauth2-v2-campaigns
-func (c *Client) Campaigns(opts ...RequestOpt) ([]*Campaign, error) {
+func (c *Client) GetCampaigns(opts ...RequestOpt) ([]*Campaign, error) {
 	var resp campaignListResponse
 	if err := c.get("/api/oauth2/v2/campaigns", &resp, opts...); err != nil {
 		return nil, err
@@ -117,7 +117,7 @@ func (c *Client) Campaigns(opts ...RequestOpt) ([]*Campaign, error) {
 	return campaigns, nil
 }
 
-func (c *Client) Campaign(id string, opts ...RequestOpt) (*Campaign, error) {
+func (c *Client) GetCampaignByID(id string, opts ...RequestOpt) (*Campaign, error) {
 	var resp campaignResponse
 	if err := c.get("/api/oauth2/v2/campaigns/"+id, &resp, opts...); err != nil {
 		return nil, err

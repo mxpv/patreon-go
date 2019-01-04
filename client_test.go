@@ -132,7 +132,7 @@ const testIdentityResponse = `
 }
 `
 
-func TestClient_Identity(t *testing.T) {
+func TestClient_GetIdentity(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -141,7 +141,7 @@ func TestClient_Identity(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
-	user, err := client.Identity()
+	user, err := client.GetIdentity()
 	require.NoError(t, err)
 	require.NotNil(t, user)
 
@@ -190,7 +190,7 @@ const testIdentityResponseWithEmptyAttributes = `
 }
 `
 
-func TestClient_IdentityEmptyAttributes(t *testing.T) {
+func TestClient_GetIdentityEmptyAttributes(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -199,7 +199,7 @@ func TestClient_IdentityEmptyAttributes(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
-	user, err := client.Identity()
+	user, err := client.GetIdentity()
 	require.NoError(t, err)
 	require.NotNil(t, user)
 }
@@ -322,7 +322,7 @@ const testCampaignListResponse = `
 }
 `
 
-func TestClient_CampaignList(t *testing.T) {
+func TestClient_GetCampaigns(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -331,7 +331,7 @@ func TestClient_CampaignList(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
-	campaigns, err := client.Campaigns()
+	campaigns, err := client.GetCampaigns()
 	require.NoError(t, err)
 	require.NotNil(t, campaigns)
 	require.Len(t, campaigns, 1)
@@ -478,7 +478,7 @@ const testCampaignResponse = `
 }
 `
 
-func TestClient_Campaign(t *testing.T) {
+func TestClient_GetCampaignByID(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -487,7 +487,7 @@ func TestClient_Campaign(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
-	campaign, err := client.Campaign("2")
+	campaign, err := client.GetCampaignByID("2")
 	require.NoError(t, err)
 	require.NotNil(t, campaign)
 	require.NotNil(t, campaign.CampaignAttributes)
