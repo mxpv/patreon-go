@@ -259,34 +259,34 @@ type TierAttributes struct {
 // UserAttributes represent the Patreon user attributes.
 type UserAttributes struct {
 	// The user's email address. Requires certain scopes to access. See the scopes section of this documentation.
-	Email             string      `json:"email"`
+	Email string `json:"email"`
 	// First name. Can be null.
-	FirstName         string      `json:"first_name"`
+	FirstName string `json:"first_name"`
 	// Last name. Can be null.
-	LastName          string      `json:"last_name"`
+	LastName string `json:"last_name"`
 	// Combined first and last name.
-	FullName          string      `json:"full_name"`
+	FullName string `json:"full_name"`
 	// true if the user has confirmed their email.
-	IsEmailVerified   bool        `json:"is_email_verified"`
+	IsEmailVerified bool `json:"is_email_verified"`
 	// The public "username" of the user. patreon.com/ goes to this user's creator page.
 	// Non-creator users might not have a vanity. Can be null.
-	Vanity            string      `json:"vanity"`
+	Vanity string `json:"vanity"`
 	// The user's about text, which appears on their profile. Can be null.
-	About             string      `json:"about"`
+	About string `json:"about"`
 	// The user's profile picture URL, scaled to width 400px.
-	ImageURL          string      `json:"image_url"`
+	ImageURL string `json:"image_url"`
 	// The user's profile picture URL, scaled to a square of size 100x100px.
-	ThumbURL          string      `json:"thumb_url"`
+	ThumbURL string `json:"thumb_url"`
 	// true if this user can view nsfw content. Can be null.
-	CanSeeNSFW        bool        `json:"can_see_nsfw"`
+	CanSeeNSFW bool `json:"can_see_nsfw"`
 	// Datetime of this user's account creation.
-	Created           NullTime    `json:"created"`
+	Created NullTime `json:"created"`
 	// URL of this user's creator or patron profile.
-	URL               string      `json:"url"`
+	URL string `json:"url"`
 	// How many posts this user has liked.
-	LikeCount         int         `json:"like_count"`
+	LikeCount int `json:"like_count"`
 	// true if the user has chosen to keep private which creators they pledge to. Can be null.
-	HidePledges       bool        `json:"hide_pledges"`
+	HidePledges bool `json:"hide_pledges"`
 	// Mapping from user's connected app names to external user id on the respective app.
 	SocialConnections interface{} `json:"social_connections"`
 }
@@ -294,16 +294,16 @@ type UserAttributes struct {
 // WebhookAttributes represent webhook attributes.
 type WebhookAttributes struct {
 	// List of events that will trigger this webhook.
-	Triggers                  []string `json:"triggers"`
+	Triggers []string `json:"triggers"`
 	// Fully qualified uri where webhook will be sent (e.g. https://www.example.com/webhooks/incoming).
-	URI                       string   `json:"uri"`
+	URI string `json:"uri"`
 	// true if the webhook is paused as a result of repeated failed attempts to post to uri.
 	// Set to false to attempt to re-enable a previously failing webhook.
-	Paused                    bool     `json:"paused"`
+	Paused bool `json:"paused"`
 	// Last date that the webhook was attempted or used.
-	LastAttemptedAt           NullTime `json:"last_attempted_at"`
+	LastAttemptedAt NullTime `json:"last_attempted_at"`
 	// Number of times the webhook has failed consecutively, when in an error state.
-	NumConsecutiveTimesFailed int      `json:"num_consecutive_times_failed"`
+	NumConsecutiveTimesFailed int `json:"num_consecutive_times_failed"`
 	// Secret used to sign your webhook message body, so you can validate authenticity upon receipt.
-	Secret                    string   `json:"secret"`
+	Secret string `json:"secret"`
 }

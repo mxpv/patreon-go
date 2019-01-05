@@ -622,7 +622,6 @@ func TestClient_GetMemberByID(t *testing.T) {
 	require.NotNil(t, member.User)
 	require.NotNil(t, member.User.UserAttributes)
 
-
 	assert.Equal(t, "Marcel", member.User.FirstName)
 	assert.Equal(t, "Marcel", member.User.FullName)
 	assert.Equal(t, "https://www.patreon.com/user?u=75985", member.User.URL)

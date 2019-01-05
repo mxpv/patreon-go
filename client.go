@@ -8,16 +8,6 @@ import (
 	"strconv"
 )
 
-const (
-	// AuthorizationURL specifies Patreon's OAuth2 authorization endpoint (see https://tools.ietf.org/html/rfc6749#section-3.1).
-	// See Example_refreshToken for examples.
-	AuthorizationURL = "https://www.patreon.com/oauth2/authorize"
-
-	// AccessTokenURL specifies Patreon's OAuth2 token endpoint (see https://tools.ietf.org/html/rfc6749#section-3.2).
-	// See Example_refreshToken for examples.
-	AccessTokenURL = "https://api.patreon.com/oauth2/token"
-)
-
 const BaseURL = "https://www.patreon.com"
 
 // Client manages communication with Patreon API.
