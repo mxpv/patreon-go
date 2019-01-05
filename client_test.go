@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"golang.org/x/oauth2"
@@ -101,7 +102,7 @@ const testIdentityResponse = `
     },
     "included": [{
         "attributes": {
-            "created_at": "2016-02-02T19:58:18+00:00",
+            "created_at": null,
             "creation_name": "new podcasting experience - Podsync",
             "discord_server_id": null,
             "google_analytics_id": null,
@@ -150,6 +151,8 @@ func TestClient_GetIdentity(t *testing.T) {
 	assert.Equal(t, "Max", user.FirstName)
 	assert.Equal(t, "https://www.patreon.com/podsync", user.URL)
 	assert.Equal(t, "podsync", user.Vanity)
+
+	assert.Equal(t, time.Date(2016, 02, 02, 19, 56, 14, 0, time.UTC).Unix(), user.Created.Unix())
 
 	require.NotNil(t, user.Campaign)
 
