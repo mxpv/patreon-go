@@ -94,20 +94,21 @@ func (c *Client) GetCampaigns(opts ...RequestOpt) ([]*Campaign, error) {
 		}
 
 		// Read 'relationships' fields and link 'included' items
+		relationships := &item.Relationships
 
-		if item.Relationships.Creator.Data != nil {
-			campaign.Creator = resp.Included.users[item.Relationships.Creator.Data.ID]
+		if relationships.Creator.Data != nil {
+			campaign.Creator = resp.Included.users[relationships.Creator.Data.ID]
 		}
 
-		for _, relation := range item.Relationships.Benefits.Data {
+		for _, relation := range relationships.Benefits.Data {
 			campaign.Benefits = append(campaign.Benefits, resp.Included.benefits[relation.ID])
 		}
 
-		for _, relation := range item.Relationships.Goals.Data {
+		for _, relation := range relationships.Goals.Data {
 			campaign.Goals = append(campaign.Goals, resp.Included.goals[relation.ID])
 		}
 
-		for _, relation := range item.Relationships.Tiers.Data {
+		for _, relation := range relationships.Tiers.Data {
 			campaign.Tiers = append(campaign.Tiers, resp.Included.tiers[relation.ID])
 		}
 
@@ -117,6 +118,10 @@ func (c *Client) GetCampaigns(opts ...RequestOpt) ([]*Campaign, error) {
 	return campaigns, nil
 }
 
+// GetCampaignByID returns information about a single Campaign, fetched by campaign ID
+// Requires the campaigns scope.
+// Top-level includes: tiers, creator, benefits, goals.
+// https://docs.patreon.com/#get-api-oauth2-v2-campaigns-campaign_id
 func (c *Client) GetCampaignByID(id string, opts ...RequestOpt) (*Campaign, error) {
 	var resp campaignResponse
 	if err := c.get("/api/oauth2/v2/campaigns/"+id, &resp, opts...); err != nil {
@@ -131,23 +136,76 @@ func (c *Client) GetCampaignByID(id string, opts ...RequestOpt) (*Campaign, erro
 		campaign.CampaignAttributes = resp.Data.Attributes
 	}
 
-	if resp.Data.Relationships.Creator.Data != nil {
-		campaign.Creator = resp.Included.users[resp.Data.Relationships.Creator.Data.ID]
+	relationships := &resp.Data.Relationships
+
+	if relationships.Creator.Data != nil {
+		campaign.Creator = resp.Included.users[relationships.Creator.Data.ID]
 	}
 
-	for _, relation := range resp.Data.Relationships.Benefits.Data {
+	for _, relation := range relationships.Benefits.Data {
 		campaign.Benefits = append(campaign.Benefits, resp.Included.benefits[relation.ID])
 	}
 
-	for _, relation := range resp.Data.Relationships.Goals.Data {
+	for _, relation := range relationships.Goals.Data {
 		campaign.Goals = append(campaign.Goals, resp.Included.goals[relation.ID])
 	}
 
-	for _, relation := range resp.Data.Relationships.Tiers.Data {
+	for _, relation := range relationships.Tiers.Data {
 		campaign.Tiers = append(campaign.Tiers, resp.Included.tiers[relation.ID])
 	}
 
 	return campaign, nil
+}
+
+// GetMembersByCampaignID gets the Members for a given Campaign by id.
+// Requires the campaigns.members scope.
+// Top-level includes: address (requires campaign.members.address scope), campaign, currently_entitled_tiers, user.
+// We recommend using currently_entitled_tiers to see exactly what a Member is entitled to,
+// either as an include on the members list or on the member get.
+// See https://docs.patreon.com/#get-api-oauth2-v2-campaigns-campaign_id-members
+func (c *Client) GetMembersByCampaignID(id string, opts ...RequestOpt) ([]*Member, error) {
+	return nil, nil
+}
+
+// GetMemberByID gets a particular member by id.
+// Requires the campaigns.members scope.
+// Top-level includes: address (requires campaign.members.address scope), campaign, currently_entitled_tiers, user.
+// We recommend using currently_entitled_tiers to see exactly what a member is entitled to,
+// either as an include on the members list or on the member get.
+// See https://docs.patreon.com/#get-api-oauth2-v2-members-id
+func (c *Client) GetMemberByID(id string, opts ...RequestOpt) (*Member, error) {
+	var resp memberResponse
+	if err := c.get("/api/oauth2/v2/members/"+id, &resp, opts...); err != nil {
+		return nil, err
+	}
+
+	member := &Member{
+		ID: resp.Data.ID,
+	}
+
+	if resp.Data.Attributes != nil {
+		member.MemberAttributes = resp.Data.Attributes
+	}
+
+	relationships := &resp.Data.Relationships
+
+	if relationships.Address.Data != nil {
+		member.Address = resp.Included.addresses[relationships.Address.Data.ID]
+	}
+
+	if relationships.Campaign.Data != nil {
+		member.Campaign = resp.Included.campaigns[relationships.Campaign.Data.ID]
+	}
+
+	if relationships.User.Data != nil {
+		member.User = resp.Included.users[relationships.User.Data.ID]
+	}
+
+	for _, item := range resp.Included.tiers {
+		member.CurrentlyEntitledTiers = append(member.CurrentlyEntitledTiers, item)
+	}
+
+	return member, nil
 }
 
 func (c *Client) buildURL(path string, opts ...RequestOpt) (string, error) {

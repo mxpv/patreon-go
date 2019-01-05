@@ -499,3 +499,136 @@ func TestClient_GetCampaignByID(t *testing.T) {
 	assert.True(t, campaign.IsMonthly)
 	assert.True(t, campaign.IsChargedImmediately)
 }
+
+const testMemberResponse = `
+{
+    "data": {
+        "attributes": {},
+        "id": "00478b66-a597-4a6a-b8c1-0e1a395ab613",
+        "relationships": {
+            "address": {
+                "data": null
+            },
+            "campaign": {
+                "data": {
+                    "id": "278915",
+                    "type": "campaign"
+                },
+                "links": {
+                    "related": "https://www.patreon.com/api/oauth2/v2/campaigns/278915"
+                }
+            },
+            "currently_entitled_tiers": {
+                "data": [{
+                    "id": "1048240",
+                    "type": "tier"
+                }]
+            },
+            "user": {
+                "data": {
+                    "id": "75985",
+                    "type": "user"
+                }
+            }
+        },
+        "type": "member"
+    },
+    "included": [{
+        "attributes": {
+            "created_at": "2016-02-02T19:58:18+00:00",
+            "creation_name": "new podcasting experience - Podsync",
+            "discord_server_id": null,
+            "google_analytics_id": "UA-22222222-2",
+            "has_rss": false,
+            "has_sent_rss_notify": false,
+            "image_small_url": "https://c10.patreonusercontent.com/3/eyJoIjo2NDAsInciOjY0MH0%3D/patreon-media/p/campaign/278915/c17598520740471ca6c0ffe553ade639/1?token-time=2145916800&token-hash=Au6pSGBsM1mQ4D3YFFtbrJHit_G99uOvIyJs_C9uT7E%3D",
+            "image_url": "https://c10.patreonusercontent.com/3/eyJ3IjoxOTIwfQ%3D%3D/patreon-media/p/campaign/278915/c17598520740471ca6c0ffe553ade639/1?token-time=2145916800&token-hash=thO-8NggSSPFYnLMeW9YowqCYKgsfTtwah_eoak6tVc%3D",
+            "is_charged_immediately": true,
+            "is_monthly": true,
+            "is_nsfw": false,
+            "main_video_embed": "",
+            "main_video_url": "",
+            "one_liner": null,
+            "patron_count": 464,
+            "pay_per_name": "month",
+            "pledge_url": "/join/podsync",
+            "published_at": "2016-02-02T20:11:19+00:00",
+            "rss_artwork_url": null,
+            "rss_feed_title": null,
+            "summary": "<a href=\"http://podsync.net/\" rel=\"nofollow\">Podsync</a> - is a simple, free service that lets you listen to any YouTube / Vimeo channels, playlists or user videos in podcast format.<br><br><strong>Idea:</strong><br>Podcast applications have a rich functionality for content delivery - automatic download of new episodes, remembering last played position, sync between devices and offline listening. This functionality is not available on YouTube and Vimeo. So the aim of\u00a0<a href=\"http://podsync.net/\" rel=\"nofollow\">Podsync</a> is to make your life easier and enable you to view/listen to content on any device in podcast client.<br><br>It's my hobby project, so to continue to support and improve it, I need your help. Your money will go into paying my server bills and adding new features.<br><br>",
+            "thanks_embed": "",
+            "thanks_msg": "You are awesome!",
+            "thanks_video_url": null
+        },
+        "id": "278915",
+        "type": "campaign"
+    }, {
+        "attributes": {
+            "about": null,
+            "created": "2017-08-30T14:07:37+00:00",
+            "first_name": "Marcel",
+            "full_name": "Marcel",
+            "image_url": "https://c8.patreon.com/2/200/75985",
+            "last_name": "",
+            "social_connections": {
+                "deviantart": null,
+                "discord": null,
+                "facebook": null,
+                "reddit": null,
+                "spotify": null,
+                "twitch": null,
+                "twitter": null,
+                "youtube": null
+            },
+            "thumb_url": "",
+            "url": "https://www.patreon.com/user?u=75985",
+            "vanity": null
+        },
+        "id": "75985",
+        "type": "user"
+    }, {
+        "attributes": {},
+        "id": "1048240",
+        "type": "tier"
+    }],
+    "links": {
+        "self": "https://www.patreon.com/api/oauth2/v2/members/00478b66-a597-4a6a-b8c1-0e1a395ab613"
+    }
+}
+`
+
+func TestClient_GetMemberByID(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/api/oauth2/v2/members/00478b66-a597-4a6a-b8c1-0e1a395ab613", func(w http.ResponseWriter, r *http.Request) {
+		_, err := fmt.Fprint(w, testMemberResponse)
+		assert.NoError(t, err)
+	})
+
+	member, err := client.GetMemberByID("00478b66-a597-4a6a-b8c1-0e1a395ab613")
+	require.NoError(t, err)
+	require.NotNil(t, member)
+
+	assert.Equal(t, "00478b66-a597-4a6a-b8c1-0e1a395ab613", member.ID)
+
+	require.NotNil(t, member.Campaign)
+	require.NotNil(t, member.Campaign.CampaignAttributes)
+
+	assert.Equal(t, "278915", member.Campaign.ID)
+	assert.Equal(t, "UA-22222222-2", member.Campaign.GoogleAnalyticsID)
+	assert.Equal(t, "You are awesome!", member.Campaign.ThanksMsg)
+
+	require.NotNil(t, member.User)
+	require.NotNil(t, member.User.UserAttributes)
+
+
+	assert.Equal(t, "Marcel", member.User.FirstName)
+	assert.Equal(t, "Marcel", member.User.FullName)
+	assert.Equal(t, "https://www.patreon.com/user?u=75985", member.User.URL)
+	assert.Equal(t, "https://c8.patreon.com/2/200/75985", member.User.ImageURL)
+
+	require.Len(t, member.CurrentlyEntitledTiers, 1)
+	assert.Equal(t, "1048240", member.CurrentlyEntitledTiers[0].ID)
+	assert.Nil(t, member.CurrentlyEntitledTiers[0].TierAttributes)
+}

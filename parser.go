@@ -57,6 +57,24 @@ type campaignResponse struct {
 	Included includes     `json:"included"`
 }
 
+type memberRelationships struct {
+	Address                data      `json:"address"`
+	Campaign               data      `json:"campaign"`
+	CurrentlyEntitledTiers dataArray `json:"currently_entitled_tiers"`
+	User                   data      `json:"user"`
+}
+
+type memberData struct {
+	ID            string              `json:"id"`
+	Attributes    *MemberAttributes   `json:"attributes"`
+	Relationships memberRelationships `json:"relationships"`
+}
+
+type memberResponse struct {
+	Data     memberData `json:"data"`
+	Included includes   `json:"included"`
+}
+
 // includes wraps 'includes' JSON field to handle objects of different type within an array.
 type includes struct {
 	addresses   map[string]*Address
