@@ -2,6 +2,7 @@ package patreon
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -75,33 +76,7 @@ func (c *Client) GetCampaigns(opts ...RequestOpt) ([]*Campaign, error) {
 	// Read 'data' array
 	campaigns := make([]*Campaign, len(resp.Data))
 	for idx, item := range resp.Data {
-		campaign := &Campaign{
-			ID: item.ID,
-		}
-
-		if item.Attributes != nil {
-			campaign.CampaignAttributes = item.Attributes
-		}
-
-		// Read 'relationships' fields and link 'included' items
-		relationships := &item.Relationships
-
-		if relationships.Creator.Data != nil {
-			campaign.Creator = resp.Included.users[relationships.Creator.Data.ID]
-		}
-
-		for _, relation := range relationships.Benefits.Data {
-			campaign.Benefits = append(campaign.Benefits, resp.Included.benefits[relation.ID])
-		}
-
-		for _, relation := range relationships.Goals.Data {
-			campaign.Goals = append(campaign.Goals, resp.Included.goals[relation.ID])
-		}
-
-		for _, relation := range relationships.Tiers.Data {
-			campaign.Tiers = append(campaign.Tiers, resp.Included.tiers[relation.ID])
-		}
-
+		campaign := makeCampaign(&item, &resp.Included)
 		campaigns[idx] = campaign
 	}
 
@@ -113,38 +88,47 @@ func (c *Client) GetCampaigns(opts ...RequestOpt) ([]*Campaign, error) {
 // Top-level includes: tiers, creator, benefits, goals.
 // https://docs.patreon.com/#get-api-oauth2-v2-campaigns-campaign_id
 func (c *Client) GetCampaignByID(id string, opts ...RequestOpt) (*Campaign, error) {
+	if id == "" {
+		return nil, errors.New("invalid campaign id")
+	}
+
 	var resp campaignResponse
 	if err := c.get("/api/oauth2/v2/campaigns/"+id, &resp, opts...); err != nil {
 		return nil, err
 	}
 
+	return makeCampaign(&resp.Data, &resp.Included), nil
+}
+
+func makeCampaign(data *campaignData, included *includes) *Campaign {
 	campaign := &Campaign{
-		ID: resp.Data.ID,
+		ID: data.ID,
 	}
 
-	if resp.Data.Attributes != nil {
-		campaign.CampaignAttributes = resp.Data.Attributes
+	if data.Attributes != nil {
+		campaign.CampaignAttributes = data.Attributes
 	}
 
-	relationships := &resp.Data.Relationships
+	relationships := &data.Relationships
 
 	if relationships.Creator.Data != nil {
-		campaign.Creator = resp.Included.users[relationships.Creator.Data.ID]
+		campaign.Creator = included.users[relationships.Creator.Data.ID]
 	}
 
 	for _, relation := range relationships.Benefits.Data {
-		campaign.Benefits = append(campaign.Benefits, resp.Included.benefits[relation.ID])
+		campaign.Benefits = append(campaign.Benefits, included.benefits[relation.ID])
 	}
 
 	for _, relation := range relationships.Goals.Data {
-		campaign.Goals = append(campaign.Goals, resp.Included.goals[relation.ID])
+		campaign.Goals = append(campaign.Goals, included.goals[relation.ID])
 	}
 
 	for _, relation := range relationships.Tiers.Data {
-		campaign.Tiers = append(campaign.Tiers, resp.Included.tiers[relation.ID])
+		campaign.Tiers = append(campaign.Tiers, included.tiers[relation.ID])
 	}
 
-	return campaign, nil
+	return campaign
+
 }
 
 // GetMembersByCampaignID gets the Members for a given Campaign by id.
@@ -154,7 +138,25 @@ func (c *Client) GetCampaignByID(id string, opts ...RequestOpt) (*Campaign, erro
 // either as an include on the members list or on the member get.
 // See https://docs.patreon.com/#get-api-oauth2-v2-campaigns-campaign_id-members
 func (c *Client) GetMembersByCampaignID(id string, opts ...RequestOpt) ([]*Member, error) {
-	return nil, nil
+	if id == "" {
+		return nil, errors.New("invalid campaign id")
+	}
+
+	var resp memberListResponse
+	path := fmt.Sprintf("/api/oauth2/v2/campaigns/%s/members", id)
+	if err := c.get(path, &resp, opts...); err != nil {
+		return nil, err
+	}
+
+	// Read 'data' array
+	members := make([]*Member, len(resp.Data))
+
+	for idx, item := range resp.Data {
+		member := makeMember(&item, &resp.Included)
+		members[idx] = member
+	}
+
+	return members, nil
 }
 
 // GetMemberByID gets a particular member by id.
@@ -164,38 +166,46 @@ func (c *Client) GetMembersByCampaignID(id string, opts ...RequestOpt) ([]*Membe
 // either as an include on the members list or on the member get.
 // See https://docs.patreon.com/#get-api-oauth2-v2-members-id
 func (c *Client) GetMemberByID(id string, opts ...RequestOpt) (*Member, error) {
+	if id == "" {
+		return nil, errors.New("invalid member id")
+	}
+
 	var resp memberResponse
 	if err := c.get("/api/oauth2/v2/members/"+id, &resp, opts...); err != nil {
 		return nil, err
 	}
 
+	return makeMember(&resp.Data, &resp.Included), nil
+}
+
+func makeMember(data *memberData, included *includes) *Member {
 	member := &Member{
-		ID: resp.Data.ID,
+		ID: data.ID,
 	}
 
-	if resp.Data.Attributes != nil {
-		member.MemberAttributes = resp.Data.Attributes
-	}
+	relationships := &data.Relationships
 
-	relationships := &resp.Data.Relationships
+	if data.Attributes != nil {
+		member.MemberAttributes = data.Attributes
+	}
 
 	if relationships.Address.Data != nil {
-		member.Address = resp.Included.addresses[relationships.Address.Data.ID]
+		member.Address = included.addresses[relationships.Address.Data.ID]
 	}
 
 	if relationships.Campaign.Data != nil {
-		member.Campaign = resp.Included.campaigns[relationships.Campaign.Data.ID]
+		member.Campaign = included.campaigns[relationships.Campaign.Data.ID]
 	}
 
 	if relationships.User.Data != nil {
-		member.User = resp.Included.users[relationships.User.Data.ID]
+		member.User = included.users[relationships.User.Data.ID]
 	}
 
-	for _, item := range resp.Included.tiers {
+	for _, item := range included.tiers {
 		member.CurrentlyEntitledTiers = append(member.CurrentlyEntitledTiers, item)
 	}
 
-	return member, nil
+	return member
 }
 
 func (c *Client) buildURL(path string, opts ...RequestOpt) (string, error) {

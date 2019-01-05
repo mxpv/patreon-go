@@ -75,6 +75,11 @@ type memberResponse struct {
 	Included includes   `json:"included"`
 }
 
+type memberListResponse struct {
+	Data     []memberData `json:"data"`
+	Included includes     `json:"included"`
+}
+
 // includes wraps 'includes' JSON field to handle objects of different type within an array.
 type includes struct {
 	addresses   map[string]*Address

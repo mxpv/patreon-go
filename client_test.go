@@ -202,6 +202,8 @@ func TestClient_GetIdentityEmptyAttributes(t *testing.T) {
 	user, err := client.GetIdentity()
 	require.NoError(t, err)
 	require.NotNil(t, user)
+
+	assert.Equal(t, "2822191", user.ID)
 }
 
 const testCampaignListResponse = `
@@ -498,6 +500,48 @@ func TestClient_GetCampaignByID(t *testing.T) {
 	assert.Equal(t, "/join/podsync", campaign.PledgeURL)
 	assert.True(t, campaign.IsMonthly)
 	assert.True(t, campaign.IsChargedImmediately)
+}
+
+const testGetMembersByCampaignIDResponse = `
+{
+    "data": [{
+        "attributes": {},
+        "id": "00478b66-a597-4a6a-b8c1-111111111111",
+        "type": "member"
+    }, {
+        "attributes": {},
+        "id": "007fb93d-f393-4b01-afae-222222222222",
+        "type": "member"
+    }],
+    "links": {
+        "next": "https://www.patreon.com/api/oauth2/v2/campaigns/278915/members?page[count]=2&page[cursor]=Prn1AE3MjZONYS111111114"
+    },
+    "meta": {
+        "pagination": {
+            "cursors": {
+                "next": "Prn1AE3MjZONYS111111114"
+            },
+            "total": 1035
+        }
+    }
+}
+`
+
+func TestClient_GetMembersByCampaignID(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/api/oauth2/v2/campaigns/278915/members", func(w http.ResponseWriter, r *http.Request) {
+		_, err := fmt.Fprint(w, testGetMembersByCampaignIDResponse)
+		assert.NoError(t, err)
+	})
+
+	members, err := client.GetMembersByCampaignID("278915")
+	require.NoError(t, err)
+	require.Len(t, members, 2)
+
+	assert.Equal(t, "00478b66-a597-4a6a-b8c1-111111111111", members[0].ID)
+	assert.Equal(t, "007fb93d-f393-4b01-afae-222222222222", members[1].ID)
 }
 
 const testMemberResponse = `
