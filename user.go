@@ -29,6 +29,7 @@ type User struct {
 		IsNuked         bool     `json:"is_nuked"`
 		Created         NullTime `json:"created"`
 		URL             string   `json:"url"`
+		DiscordId	string 	 `json:"discord_id"`
 	} `json:"attributes"`
 	Relationships struct {
 		Pledges *PledgesRelationship `json:"pledges,omitempty"`
