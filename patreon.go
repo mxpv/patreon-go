@@ -45,33 +45,60 @@ func (c *Client) Client() *http.Client {
 	return c.httpClient
 }
 
-// FetchUser fetches a patron's profile info.
-// This API returns a representation of the user who granted your OAuth client the provided access_token.
+// FetchIdentity fetches a patron's profile info.
+// This is the endpoint for accessing information about the current User with reference to the oauth token.
 // It is most typically used in the OAuth "Log in with Patreon" flow to create or update the user's account on your site.
-func (c *Client) FetchUser(opts ...requestOption) (*UserResponse, error) {
+func (c *Client) FetchIdentity(opts ...requestOption) (*UserResponse, error) {
 	resp := &UserResponse{}
-	err := c.get("/oauth2/api/current_user", resp, opts...)
+	err := c.get("/api/oauth2/v2/identity", resp, opts...)
 	return resp, err
 }
 
-// FetchCampaign fetches your own profile and campaign info.
-// This API returns a representation of the user's campaign, including its rewards and goals, and the pledges to it.
-// If there are more than twenty pledges to the campaign, the first twenty will be returned, along with a link to the
-// next page of pledges.
-func (c *Client) FetchCampaign(opts ...requestOption) (*CampaignResponse, error) {
+// FetchCampaign is the single resource endpoint returns information about a single Campaign, fetched by campaign ID.
+// Requires the campaigns scope.
+func (c *Client) FetchCampaign(campaignID string, opts ...requestOption) (*CampaignResponse, error) {
 	resp := &CampaignResponse{}
-	err := c.get("/oauth2/api/current_user/campaigns", resp, opts...)
+	err := c.get(fmt.Sprintf("/api/oauth2/v2/campaigns/%s", campaignID), resp, opts...)
 	return resp, err
 }
 
-// FetchPledges fetches a list of pledges to you.
-// This API returns a list of pledges to the provided campaignId. They are sorted by the date the pledge was made,
-// and provide relationship references to the users who made each respective pledge. The API response will also contain
-// a links section which may be used to fetch the next page of pledges, or go back to the first page.
-func (c *Client) FetchPledges(campaignId string, opts ...requestOption) (*PledgeResponse, error) {
-	resp := &PledgeResponse{}
-	path := fmt.Sprintf("/oauth2/api/campaigns/%s/pledges", campaignId)
-	err := c.get(path, resp, opts...)
+// FetchCampaigns Returns a list of Campaigns owned by the authorized user.
+// Requires the campaigns scope.
+func (c *Client) FetchCampaigns(opts ...requestOption) (*CampaignsResponse, error) {
+	resp := &CampaignsResponse{}
+	err := c.get("/api/oauth2/v2/campaigns", resp, opts...)
+	return resp, err
+}
+
+// FetchCampaignMembers gets the Members for a given Campaign.
+// Requires the campaigns.members scope.
+func (c *Client) FetchCampaignMembers(campaignID string, opts ...requestOption) (*MembersResponse, error) {
+	resp := &MembersResponse{}
+	err := c.get(fmt.Sprintf("/api/oauth2/v2/campaigns/%s/members", campaignID), resp, opts...)
+	return resp, err
+}
+
+// FetchCampaignMember gets a particular member by id.
+// Requires the campaigns.members scope.
+func (c *Client) FetchCampaignMember(memberID string, opts ...requestOption) (*MemberResponse, error) {
+	resp := &MemberResponse{}
+	err := c.get(fmt.Sprintf("/api/oauth2/v2/members/%s", memberID), resp, opts...)
+	return resp, err
+}
+
+// FetchCampaignPosts gets a list of all the Posts on a given Campaign by campaign ID.
+// Requires the campaigns.posts scope.
+func (c *Client) FetchCampaignPosts(campaignID string, opts ...requestOption) (*PostsResponse, error) {
+	resp := &PostsResponse{}
+	err := c.get(fmt.Sprintf("/api/oauth2/v2/campaigns/%s/posts", campaignID), resp, opts...)
+	return resp, err
+}
+
+// FetchCampaignPost gets a particular Post by ID.
+// Requires the campaigns.posts scope.
+func (c *Client) FetchCampaignPost(postID string, opts ...requestOption) (*PostResponse, error) {
+	resp := &PostResponse{}
+	err := c.get(fmt.Sprintf("/api/oauth2/v2/posts/%s", postID), resp, opts...)
 	return resp, err
 }
 
@@ -117,6 +144,14 @@ func (c *Client) get(path string, v interface{}, opts ...requestOption) error {
 	if err != nil {
 		return err
 	}
+
+	// body, err := ioutil.ReadAll(resp.Body)
+
+	// if err != nil {
+	// 	return err
+	// }
+
+	// fmt.Println(string(body))
 
 	if resp.StatusCode != http.StatusOK {
 		errs := ErrorResponse{}

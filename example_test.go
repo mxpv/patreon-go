@@ -29,7 +29,7 @@ func Example_refreshToken() {
 	tc := config.Client(context.Background(), &token)
 
 	client := NewClient(tc)
-	_, err := client.FetchUser()
+	_, err := client.FetchIdentity()
 	if err != nil {
 		panic(err)
 	}

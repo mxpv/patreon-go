@@ -12,12 +12,12 @@ func TestErrorResponse(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/oauth2/api/current_user", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/api/oauth2/v2/identity", func(writer http.ResponseWriter, request *http.Request) {
 		writer.WriteHeader(http.StatusForbidden)
 		fmt.Fprint(writer, errorResp)
 	})
 
-	_, err := client.FetchUser()
+	_, err := client.FetchIdentity()
 	require.Error(t, err)
 	require.Equal(t, "The server could not verify that you are authorized to access the URL requested.", err.Error())
 
