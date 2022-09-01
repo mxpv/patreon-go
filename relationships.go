@@ -91,3 +91,83 @@ type AddressRelationship struct {
 		Related string `json:"related"`
 	} `json:"links"`
 }
+
+// BenefitsRelationship represents 'benefits' include.
+type BenefitsRelationship struct {
+	Data  []Data `json:"data"`
+	Links struct {
+		Related string `json:"related"`
+	} `json:"links"`
+}
+
+// BenefitRelationship represents 'benefit' include.
+type BenefitRelationship struct {
+	Data  Data `json:"data"`
+	Links struct {
+		Related string `json:"related"`
+	} `json:"links"`
+}
+
+// MemberRelationship represents 'member' include
+type MemberRelationship struct {
+	Data  Data `json:"data"`
+	Links struct {
+		Related string `json:"related"`
+	} `json:"links"`
+}
+
+// MembershipsRelationship represents 'membership' include
+type MembershipsRelationship struct {
+	Data  []Data `json:"data"`
+	Links struct {
+		Related string `json:"related"`
+	} `json:"links"`
+}
+
+// MediaRelationship represents 'membership' include
+type MediaRelationship struct {
+	Data  Data `json:"data"`
+	Links struct {
+		Related string `json:"related"`
+	} `json:"links"`
+}
+
+// TiersRelationship represents 'tiers' include
+type TiersRelationship struct {
+	Data  []Data `json:"data"`
+	Links struct {
+		Related string `json:"related"`
+	} `json:"links"`
+}
+
+// TierRelationship represents 'tier' include
+type TierRelationship struct {
+	Data  Data `json:"data"`
+	Links struct {
+		Related string `json:"related"`
+	} `json:"links"`
+}
+
+// CampaignsRelationship represents 'campaigns' include.
+type CampaignsRelationship struct {
+	Data  []Data `json:"data"`
+	Links struct {
+		Related string `json:"related"`
+	} `json:"links"`
+}
+
+// DeliverablesRelationship represents 'deliverables' include.
+type DeliverablesRelationship struct {
+	Data  []Data `json:"data"`
+	Links struct {
+		Related string `json:"related"`
+	} `json:"links"`
+}
+
+// PledgeEventRelationship represents 'pledge_history' include.
+type PledgeEventRelationship struct {
+	Data  Data `json:"data"`
+	Links struct {
+		Related string `json:"related"`
+	} `json:"links"`
+}
