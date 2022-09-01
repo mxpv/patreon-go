@@ -36,18 +36,24 @@ func (i *Includes) UnmarshalJSON(b []byte) error {
 		// But this time, we'll pass in the appropriate struct instead of a map
 		if s.Type == "user" {
 			obj = &User{}
-		} else if s.Type == "reward" {
-			obj = &Reward{}
+		} else if s.Type == "tier" {
+			obj = &Tier{}
 		} else if s.Type == "goal" {
 			obj = &Goal{}
 		} else if s.Type == "campaign" {
 			obj = &Campaign{}
-		} else if s.Type == "pledge" {
-			obj = &Pledge{}
-		} else if s.Type == "card" {
-			obj = &Card{}
+		} else if s.Type == "benefit" {
+			obj = &Benefit{}
+		} else if s.Type == "membership" {
+			obj = &Member{}
 		} else if s.Type == "address" {
 			obj = &Address{}
+		} else if s.Type == "patron" {
+			obj = &User{}
+		} else if s.Type == "webhook" {
+			obj = &Webhook{}
+		} else if s.Type == "deliverable" {
+			obj = &Deliverable{}
 		} else {
 			return fmt.Errorf("unsupported type '%s'", s.Type)
 		}
