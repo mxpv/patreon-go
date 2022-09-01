@@ -1,38 +1,40 @@
 package patreon
 
-// UserDefaultRelations specifies default includes for User.
-const UserDefaultRelations = "campaign,pledges"
+// UserDefaultIncludes specifies default includes for User.
+const UserDefaultIncludes = "campaign,memberships"
 
-// User represents a Patreon's user.
-// Valid relationships: pledges, cards, follows, campaign, presence, session, locations, current_user_follow, pledge_to_current_user.
+// UserAttributes is all fields in the User Attributes struct
+var UserAttributes = []string{
+	"About", "CanSeeNSFW", "Created", "Email", "FirstName",
+	"FullName", "HidePledges", "ImageURL", "IsEmailVerified",
+	"LastName", "LikeCount", "SocialConnections", "ThumbURL",
+	"URL", "Vanity",
+}
+
+// User is the Patreon user, which can be both patron and creator.
 type User struct {
 	Type       string `json:"type"`
 	ID         string `json:"id"`
 	Attributes struct {
-		FirstName       string   `json:"first_name"`
-		LastName        string   `json:"last_name"`
-		FullName        string   `json:"full_name"`
-		Vanity          string   `json:"vanity"`
-		Email           string   `json:"email"`
-		About           string   `json:"about"`
-		FacebookId      string   `json:"facebook_id"`
-		Gender          int      `json:"gender"`
-		HasPassword     bool     `json:"has_password"`
-		ImageURL        string   `json:"image_url"`
-		ThumbURL        string   `json:"thumb_url"`
-		YouTube         string   `json:"youtube"`
-		Twitter         string   `json:"twitter"`
-		Facebook        string   `json:"facebook"`
-		IsEmailVerified bool     `json:"is_email_verified"`
-		IsSuspended     bool     `json:"is_suspended"`
-		IsDeleted       bool     `json:"is_deleted"`
-		IsNuked         bool     `json:"is_nuked"`
-		Created         NullTime `json:"created"`
-		URL             string   `json:"url"`
-		DiscordId	string 	 `json:"discord_id"`
+		About             string      `json:"about"`
+		CanSeeNSFW        bool        `json:"can_see_nsfw"`
+		Created           NullTime    `json:"created"`
+		Email             string      `json:"email"`
+		FirstName         string      `json:"first_name"`
+		FullName          string      `json:"full_name"`
+		HidePledges       bool        `json:"hide_pledges"`
+		ImageURL          string      `json:"image_url"`
+		IsEmailVerified   bool        `json:"is_email_verified"`
+		LastName          string      `json:"last_name"`
+		LikeCount         int         `json:"like_count"`
+		SocialConnections interface{} `json:"social_connections"`
+		ThumbURL          string      `json:"thumb_url"`
+		URL               string      `json:"url"`
+		Vanity            string      `json:"vanity"`
 	} `json:"attributes"`
 	Relationships struct {
-		Pledges *PledgesRelationship `json:"pledges,omitempty"`
+		Campaign    *CampaignRelationship    `json:"campaign,omitempty"`
+		Memberships *MembershipsRelationship `json:"memberships,omitempty"`
 	} `json:"relationships"`
 }
 

@@ -8,101 +8,86 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFetchUser(t *testing.T) {
+func TestFetchVanity(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/oauth2/api/current_user", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer, currentUserResp)
+	mux.HandleFunc("/api/oauth2/v2/identity", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer, currentyVanityResp)
 	})
 
-	resp, err := client.FetchUser()
+	resp, err := client.FetchIdentity()
 	require.NoError(t, err)
-	require.Equal(t, "https://www.patreon.com/api/user/3232132131", resp.Links.Self)
+	require.Equal(t, "https://www.patreon.com/api/oauth2/v2/user/3232132131", resp.Links.Self)
 	require.Equal(t, "user", resp.Data.Type)
 	require.Equal(t, "3232132131", resp.Data.ID)
 
 	// Attributes
 
 	attrs := resp.Data.Attributes
-	require.Equal(t, "max@gmail.com", attrs.Email)
-	require.Equal(t, "max", attrs.Facebook)
-	require.Equal(t, "1312321312", attrs.FacebookId)
-	require.Equal(t, "Max", attrs.FirstName)
-	require.Equal(t, "Max", attrs.LastName)
-	require.Equal(t, "Max", attrs.FullName)
-	require.Equal(t, 1, attrs.Gender)
-	require.True(t, attrs.HasPassword)
-	require.Equal(t, "https://c8.patreon.com/2/400/3232132131", attrs.ImageURL)
-	require.Equal(t, "https://c8.patreon.com/2/100/3232132131", attrs.ThumbURL)
-	require.True(t, attrs.IsDeleted)
+	require.Equal(t, "Super cool", attrs.About)
+	require.True(t, attrs.CanSeeNSFW)
+	// require.Equal(t, "2022-05-05T18:33:14.000+00:00", attrs.Created)
+	require.Equal(t, "austin@gmail.com", attrs.Email)
+	require.Equal(t, "Austin", attrs.FirstName)
+	require.Equal(t, "Austin Austin", attrs.FullName)
+	require.True(t, attrs.HidePledges)
+	require.Equal(t, "https://c10.patreonusercontent.com/4/patreon-media/p/user/3232132131", attrs.ImageURL)
 	require.True(t, attrs.IsEmailVerified)
-	require.True(t, attrs.IsNuked)
-	require.True(t, attrs.IsSuspended)
-	require.Equal(t, "pod_sync", attrs.Twitter)
-	require.Equal(t, "https://www.patreon.com/podsync", attrs.URL)
-	require.Equal(t, "podsync", attrs.Vanity)
+	require.Equal(t, "Austin", attrs.LastName)
+	require.Equal(t, 0, attrs.LikeCount)
+	require.Equal(t, "https://c10.patreonusercontent.com/4/patreon-media/p/user/3232132131", attrs.ThumbURL)
+	require.Equal(t, "https://www.patreon.com/user?u=3232132131", attrs.URL)
+	require.Equal(t, "yurt", attrs.Vanity)
 
 	// Relationships
 
-	pledges := resp.Data.Relationships.Pledges
-	require.NotNil(t, pledges)
-	require.Len(t, pledges.Data, 1)
-	require.Equal(t, "2444714", pledges.Data[0].ID)
-	require.Equal(t, "pledge", pledges.Data[0].Type)
+	// pledges := resp.Data.Relationships.Pledges
+	// require.NotNil(t, pledges)
+	// require.Len(t, pledges.Data, 1)
+	// require.Equal(t, "2444714", pledges.Data[0].ID)
+	// require.Equal(t, "pledge", pledges.Data[0].Type)
 }
 
-const currentUserResp = `
+const currentyVanityResp = `
 {
     "data": {
-        "attributes": {
-            "about": "",
-            "created": "2016-02-02T19:56:14+00:00",
-            "discord_id": null,
-            "email": "max@gmail.com",
-            "facebook": "max",
-            "facebook_id": "1312321312",
-            "first_name": "Max",
-            "full_name": "Max",
-            "gender": 1,
-            "has_password": true,
-            "image_url": "https://c8.patreon.com/2/400/3232132131",
-            "is_deleted": true,
-            "is_email_verified": true,
-            "is_nuked": true,
-            "is_suspended": true,
-            "last_name": "Max",
-            "social_connections": {
-                "deviantart": null,
-                "discord": null,
-                "facebook": null,
-                "spotify": null,
-                "twitch": null,
-                "twitter": null,
-                "youtube": null
-            },
-            "thumb_url": "https://c8.patreon.com/2/100/3232132131",
-            "twitch": null,
-            "twitter": "pod_sync",
-            "url": "https://www.patreon.com/podsync",
-            "vanity": "podsync",
-            "youtube": null
+      "attributes": {
+        "about": "Super cool",
+        "can_see_nsfw": true,
+        "created": "2022-05-05T18:33:14.000+00:00",
+        "email": "austin@gmail.com",
+        "first_name": "Austin",
+        "full_name": "Austin Austin",
+        "hide_pledges": true,
+        "image_url": "https://c10.patreonusercontent.com/4/patreon-media/p/user/3232132131",
+        "is_email_verified": true,
+        "last_name": "Austin",
+        "like_count":0,
+        "social_connections": {
+          "deviantart": null,
+          "discord": null,
+          "facebook": null,
+          "google": null,
+          "instagram": null,
+          "reddit": null,
+          "spotify": null,
+          "twitch": null,
+          "twitter": null,
+          "vimeo": null,
+          "youtube": {
+            "scopes": ["https://www.googleapis.com/auth/youtube.readonly"],
+            "url": "https://youtube.com/channel/UC0qMcx_Yg_oiN5dVllNk71w",
+            "user_id": "UC0qMcx_Yg_3232132131"
+          }
         },
-        "id": "3232132131",
-        "relationships": {
-            "pledges": {
-                "data": [
-                	{
-                    	"id": "2444714",
-                        "type": "pledge"
-                    }
-                ]
-            }
-        },
-        "type": "user"
+        "thumb_url": "https://c10.patreonusercontent.com/4/patreon-media/p/user/3232132131",
+        "url": "https://www.patreon.com/user?u=3232132131",
+        "vanity": "yurt"
+      },
+      "id": "3232132131",
+      "type": "user"
     },
-    "links": {
-        "self": "https://www.patreon.com/api/user/3232132131"
-    }
-}
+    "links": { "self": "https://www.patreon.com/api/oauth2/v2/user/3232132131" }
+  }
 `
