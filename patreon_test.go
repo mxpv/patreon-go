@@ -1,6 +1,7 @@
 package patreon
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -49,7 +50,7 @@ func TestBuildURLWithInvalidPath(t *testing.T) {
 }
 
 func TestClient(t *testing.T) {
-	tc := oauth2.NewClient(oauth2.NoContext, nil)
+	tc := oauth2.NewClient(context.Background(), nil)
 	client := NewClient(tc)
 	require.Equal(t, tc, client.Client())
 }
