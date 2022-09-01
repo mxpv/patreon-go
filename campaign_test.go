@@ -12,32 +12,31 @@ func TestFetchCampaign(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/oauth2/api/current_user/campaigns", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/api/oauth2/v2/campaigns", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer, fetchCampaignResp)
 	})
 
-	resp, err := client.FetchCampaign()
+	resp, err := client.FetchCampaigns()
+	if err != nil {
+		panic(err)
+	}
 	require.NoError(t, err)
 
 	require.Equal(t, 1, len(resp.Data))
 	require.Equal(t, "campaign", resp.Data[0].Type)
-	require.Equal(t, "278915", resp.Data[0].ID)
-	require.Equal(t, "new podcasting experience - Podsync", resp.Data[0].Attributes.CreationName)
+	require.Equal(t, "8636299", resp.Data[0].ID)
+	require.Equal(t, "outstanding coding projects", resp.Data[0].Attributes.CreationName)
 
 	// Attributes
 
 	attrs := resp.Data[0].Attributes
-	require.Equal(t, 8, attrs.CreationCount)
-	require.True(t, attrs.DisplayPatronGoals)
 	require.NotEmpty(t, attrs.ImageSmallURL)
 	require.NotEmpty(t, attrs.ImageURL)
-	require.True(t, attrs.IsChargedImmediately)
-	require.True(t, attrs.IsMonthly)
-	require.True(t, attrs.IsNsfw)
-	require.True(t, attrs.IsPlural)
+	// require.True(t, attrs.IsChargedImmediately)
+	// require.True(t, attrs.IsMonthly)
+	require.False(t, attrs.IsNsfw)
 	require.Equal(t, 123121, attrs.PatronCount)
 	require.Equal(t, "month", attrs.PayPerName)
-	require.Equal(t, 12321312, attrs.PledgeSum)
 	require.NotEmpty(t, attrs.Summary)
 	require.NotEmpty(t, attrs.PledgeURL)
 	require.NotEmpty(t, attrs.ThanksMsg)
@@ -48,113 +47,95 @@ func TestFetchCampaign(t *testing.T) {
 	require.NotNil(t, creator)
 	require.Equal(t, "2343242423", creator.Data.ID)
 	require.Equal(t, "user", creator.Data.Type)
-	require.Equal(t, "https://www.patreon.com/api/user/2343242423", creator.Links.Related)
-
-	categories := resp.Data[0].Relationships.Categories
-	require.NotNil(t, categories)
-	require.Equal(t, 1, len(categories.Data))
-	require.Equal(t, "7", categories.Data[0].ID)
-	require.Equal(t, "category", categories.Data[0].Type)
+	require.Equal(t, "https://www.patreon.com/api/oauth2/v2/user/2343242423", creator.Links.Related)
 
 	// Includes
 
 	user, ok := resp.Included.Items[0].(*User)
 	require.True(t, ok)
-	require.Equal(t, "2822191", user.ID)
+	require.Equal(t, "2343242423", user.ID)
 	require.Equal(t, "user", user.Type)
-	require.Equal(t, "podsync", user.Attributes.Vanity)
 
-	reward, ok := resp.Included.Items[1].(*Reward)
+	tier, ok := resp.Included.Items[1].(*Tier)
 	require.True(t, ok)
-	require.Equal(t, "12312312", reward.ID)
-	require.Equal(t, "reward", reward.Type)
-	require.Equal(t, 100, reward.Attributes.Amount)
+	require.Equal(t, "8606545", tier.ID)
+	require.Equal(t, "tier", tier.Type)
 
-	goal, ok := resp.Included.Items[2].(*Goal)
-	require.True(t, ok)
-	require.Equal(t, "2131231", goal.ID)
-	require.Equal(t, "goal", goal.Type)
-	require.Equal(t, 1000, goal.Attributes.Amount)
 }
 
 const fetchCampaignResp = `
 {
     "data": [
-        {
-            "attributes": {
-                "created_at": "2016-02-02T19:58:18+00:00",
-                "creation_count": 8,
-                "creation_name": "new podcasting experience - Podsync",
-                "discord_server_id": null,
-                "display_patron_goals": true,
-                "earnings_visibility": null,
-                "image_small_url": "https://c10.patreon.com/3/eyJoIjoxMjgwLCJ3IjoxMjgwfQ%3D%3D/patreon-user/AS2N2NrZauWDuhVcuua87P7QtSOdCtPWiazP99SpvJWWHn8d4GvZI56AHqTn94g2_large_2.png?token-time=2145916800&token-hash=VNcCmkq6bOjbjizpwNHePu3aNqujVMKJYdfaPxoz3_c%3D",
-                "image_url": "https://c10.patreon.com/3/eyJ3IjoxOTIwfQ%3D%3D/patreon-user/AS2N2NrZauWDuhVcuua87P7QtSOdCtPWiazP99SpvJWWHn8d4GvZI56AHqTn94g2_large_2.png?token-time=2145916800&token-hash=4KxOxPVCtGwPskLYr8BZGyZW94VwAKbD7j9RDHcvf0E%3D",
-                "is_charged_immediately": true,
-                "is_monthly": true,
-                "is_nsfw": true,
-                "is_plural": true,
-                "main_video_embed": "",
-                "main_video_url": "",
-                "one_liner": null,
-                "outstanding_payment_amount_cents": 0,
-                "patron_count": 123121,
-                "pay_per_name": "month",
-                "pledge_sum": 12321312,
-                "pledge_url": "/bePatron?c=278915",
-                "published_at": "2016-02-02T20:11:19+00:00",
-                "summary": "<a href=\"http://podsync.net/\" rel=\"nofollow\">Podsync</a> - is a simple, free service that lets you listen to any YouTube / Vimeo channels, playlists or user videos in podcast format.<br><br><strong>Idea:</strong><br>Podcast applications have a rich functionality for content delivery - automatic download of new episodes, remembering last played position, sync between devices and offline listening. This functionality is not available on YouTube and Vimeo. So the aim of\u00a0<a href=\"http://podsync.net/\" rel=\"nofollow\">Podsync</a> is to make your life easier and enable you to view/listen to content on any device in podcast client.<br><br>It's my hobby project, so to continue to support and improve it, I need your help. Your money will go into paying my server bills and adding new features.<br><br>",
-                "thanks_embed": "",
-                "thanks_msg": "You are awesome!",
-                "thanks_video_url": null
-            },
-            "id": "278915",
-            "type": "campaign",
-            "relationships": {
-                "categories": {
-                    "data": [
-                        {
-                            "id": "7",
-                            "type": "category"
-                        }
-                    ]
-                },
-                "creator": {
-                    "data": {
-                        "id": "2343242423",
-                        "type": "user"
-                    },
-                    "links": {
-                        "related": "https://www.patreon.com/api/user/2343242423"
-                    }
-                }
+      {
+        "attributes": {
+          "created_at": "2022-05-05T18:33:45.000+00:00",
+          "creation_name": "outstanding coding projects",
+          "discord_server_id": null,
+          "google_analytics_id": null,
+          "has_rss": false,
+          "has_sent_rss_notify": false,
+          "image_small_url": "https://c10.patreonusercontent.com/4/patreon-media/p/campaign/8636299/1035867e95234da7b561610c47ca7ed4/eyJ3IjoxOTIwLCJ3ZSI6MX0%3D/1.jpg?token-time=1664841600&token-hash=OZAH1tyGDklRD4891PGP0ULGoSs3KeecPeqtMJC96qs%3D",
+          "image_url": "https://c10.patreonusercontent.com/4/patreon-media/p/campaign/8636299/1035867e95234da7b561610c47ca7ed4/eyJ3IjoxOTIwLCJ3ZSI6MX0%3D/1.jpg?token-time=1664841600&token-hash=OZAH1tyGDklRD4891PGP0ULGoSs3KeecPeqtMJC96qs%3D",
+          "is_charged_immediately": false,
+          "is_monthly": true,
+          "is_nsfw": false,
+          "main_video_embed": null,
+          "main_video_url": null,
+          "one_liner": null,
+          "patron_count": 123121,
+          "pay_per_name": "month",
+          "pledge_url": "/join/austinhub",
+          "published_at": "2022-08-31T22:43:52.000+00:00",
+          "rss_artwork_url": null,
+          "rss_feed_title": null,
+          "summary": "Austin Hub is a great source for challenging and rewarding software development tutorials. Join Austin Hub on the journey to creating products.",
+          "thanks_embed": null,
+          "thanks_msg": "Thank you!",
+          "thanks_video_url": null
+        },
+        "id": "8636299",
+        "relationships": {
+          "benefits": {
+            "data": [
+              { "id": "10456246", "type": "benefit" },
+              { "id": "10456346", "type": "benefit" },
+              { "id": "10456319", "type": "benefit" },
+              { "id": "10456374", "type": "benefit" },
+              { "id": "10456244", "type": "benefit" },
+              { "id": "10456402", "type": "benefit" }
+            ]
+          },
+          "creator": {
+            "data": { "id": "2343242423", "type": "user" },
+            "links": {
+              "related": "https://www.patreon.com/api/oauth2/v2/user/2343242423"
             }
-        }
+          },
+          "goals": { "data": [] },
+          "tiers": {
+            "data": [
+              { "id": "8606545", "type": "tier" },
+              { "id": "8606546", "type": "tier" },
+              { "id": "8606547", "type": "tier" }
+            ]
+          }
+        },
+        "type": "campaign"
+      }
     ],
     "included": [
-        {
-            "attributes": {
-                "vanity": "podsync"
-            },
-            "id": "2822191",
-            "relationships": {},
-            "type": "user"
-        },
-        {
-            "attributes": {
-                "amount": 100
-            },
-            "id": "12312312",
-            "relationships": {},
-            "type": "reward"
-        },
-        {
-            "attributes": {
-                "amount": 1000
-            },
-            "id": "2131231",
-            "type": "goal"
-        }
-    ]
-}
+      { "attributes": {}, "id": "2343242423", "type": "user" },
+      { "attributes": {}, "id": "8606545", "type": "tier" },
+      { "attributes": {}, "id": "8606546", "type": "tier" },
+      { "attributes": {}, "id": "8606547", "type": "tier" },
+      { "attributes": {}, "id": "10456246", "type": "benefit" },
+      { "attributes": {}, "id": "10456346", "type": "benefit" },
+      { "attributes": {}, "id": "10456319", "type": "benefit" },
+      { "attributes": {}, "id": "10456374", "type": "benefit" },
+      { "attributes": {}, "id": "10456244", "type": "benefit" },
+      { "attributes": {}, "id": "10456402", "type": "benefit" }
+    ],
+    "meta": { "pagination": { "total": 1 } }
+  }
+  
 `
